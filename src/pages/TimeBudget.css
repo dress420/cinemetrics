@@ -1,0 +1,18 @@
+.tb-page { flex: 1; overflow-y: auto; padding: 28px 32px; display: flex; flex-direction: column; gap: 28px; min-width: 0; }
+.tb-header { flex-shrink: 0; }
+.tb-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; flex-shrink: 0; }
+.tb-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 22px 12px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  transition: all .2s; cursor: pointer;
+}
+.tb-card:hover { border-color: var(--border2); background: var(--bg3); transform: translateY(-2px); }
+.tb-card.active { border-color: rgba(77,159,214,.4); background: var(--accent-dim); }
+.tb-icon { font-size: 28px; }
+.tb-label { font-size: 13px; font-weight: 600; color: var(--text2); }
+.tb-loading { text-align: center; padding: 40px; font-size: 13px; color: var(--text4); }
+.tb-section { display: flex; flex-direction: column; gap: 14px; }
+.tb-films { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 14px; }
+
+@media (max-width: 768px) { .tb-grid { grid-template-columns: repeat(3, 1fr); } }

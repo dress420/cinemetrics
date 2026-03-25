@@ -1,0 +1,49 @@
+.fr-page { flex: 1; overflow-y: auto; padding: 28px 32px; display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+.fr-header { flex-shrink: 0; }
+.fr-search { position: relative; max-width: 500px; flex-shrink: 0; }
+.fr-results { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--radius-md); overflow: hidden; z-index: 10; box-shadow: 0 16px 48px rgba(0,0,0,.5); }
+.fr-result { display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; border-bottom: 1px solid var(--border); transition: background .1s; }
+.fr-result:last-child { border-bottom: none; }
+.fr-result:hover { background: var(--bg3); }
+.fr-result-img { width: 36px; height: 50px; border-radius: 5px; object-fit: cover; flex-shrink: 0; }
+.fr-result-placeholder { width: 36px; height: 50px; border-radius: 5px; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--text4); flex-shrink: 0; }
+.fr-result-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.fr-loading { text-align: center; padding: 40px; font-size: 13px; color: var(--text4); }
+
+.fr-progress-card {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-xl);
+  padding: 24px 28px; flex-shrink: 0;
+}
+.fr-progress-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.fr-progress-title { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -.02em; }
+.fr-progress-count { font-size: 13px; color: var(--accent); }
+.fr-progress-bar { height: 8px; background: var(--bg4); border-radius: 4px; overflow: hidden; }
+.fr-progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width .6s cubic-bezier(.16,1,.3,1); }
+.fr-progress-pct { font-size: 11px; color: var(--text4); margin-top: 8px; }
+
+.fr-timeline { display: flex; flex-direction: column; gap: 8px; }
+.fr-film {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 16px; background: var(--bg2);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  transition: border-color .15s; position: relative;
+}
+.fr-film:hover { border-color: var(--border2); }
+.fr-film.seen { border-color: rgba(77,159,214,.15); background: rgba(77,159,214,.03); }
+.fr-film-num { font-size: 13px; color: var(--text4); width: 28px; flex-shrink: 0; text-align: right; }
+.fr-film-poster { width: 44px; height: 64px; border-radius: 6px; overflow: hidden; flex-shrink: 0; position: relative; }
+.fr-film-poster img { width: 100%; height: 100%; object-fit: cover; }
+.fr-film-no-poster { width: 100%; height: 100%; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--text4); }
+.fr-seen-badge { position: absolute; inset: 0; background: rgba(77,159,214,.7); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; font-weight: 700; }
+.fr-film-info { flex: 1; min-width: 0; }
+.fr-film-title { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fr-film-year { font-size: 11px; color: var(--text4); margin-top: 2px; }
+.fr-film-score { font-size: 11px; color: var(--accent); margin-top: 2px; }
+.fr-add-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text3); font-size: 18px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.fr-add-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }

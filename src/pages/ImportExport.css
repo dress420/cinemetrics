@@ -1,0 +1,28 @@
+.ie-page { flex: 1; overflow-y: auto; padding: 28px 32px; display: flex; flex-direction: column; gap: 28px; min-width: 0; }
+.ie-header { flex-shrink: 0; }
+.ie-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; flex-shrink: 0; }
+.ie-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-xl); padding: 28px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.ie-card-title { font-size: 10px; letter-spacing: .14em; color: var(--text4); }
+.ie-card-desc { font-size: 14px; color: var(--text2); font-weight: 400; }
+.ie-export-btns { display: flex; gap: 10px; }
+.ie-upload-btn { cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.ie-hint { font-size: 11px; color: var(--text4); line-height: 1.5; }
+
+.ie-progress {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px 24px;
+}
+.ie-progress-label { font-size: 12px; color: var(--text2); margin-bottom: 10px; }
+.ie-progress-bar { height: 6px; background: var(--bg4); border-radius: 3px; overflow: hidden; }
+.ie-progress-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width .3s; }
+
+.ie-done {
+  background: rgba(77,229,160,.06); border: 1px solid rgba(77,229,160,.15);
+  border-radius: var(--radius-lg); padding: 20px 24px; text-align: center;
+}
+.ie-done-title { font-size: 18px; font-weight: 700; color: var(--green); margin-bottom: 8px; }
+.ie-done-stats { font-size: 13px; color: var(--text2); }
