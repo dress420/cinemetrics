@@ -23,6 +23,13 @@ const TIME_FILTERS = [
   { key: 'day',     label: 'Today'      },
 ]
 
+const RUNTIME_FILTERS = [
+  { key: 'any',    label: 'Any Length',   lte: null, gte: null },
+  { key: 'short',  label: 'Under 90min', lte: 90,   gte: null },
+  { key: 'medium', label: '90–120min',   lte: 120,  gte: 90 },
+  { key: 'epic',   label: '2h+ Epic',    lte: null,  gte: 120 },
+]
+
 function getDateRange(timeFilter) {
   const now   = new Date()
   const yyyy  = now.getFullYear()
@@ -42,11 +49,13 @@ function getDateRange(timeFilter) {
   }
 }
 
-function buildUrl(source, timeFilter, page) {
+function buildUrl(source, timeFilter, page, runtimeFilter) {
   const range = getDateRange(timeFilter)
   const dateParam = range
     ? `&primary_release_date.gte=${range.gte}&primary_release_date.lte=${range.lte}`
     : ''
+  const rtf = RUNTIME_FILTERS.find(r => r.key === runtimeFilter) || RUNTIME_FILTERS[0]
+  const runtimeParam = (rtf.lte ? `&with_runtime.lte=${rtf.lte}` : '') + (rtf.gte ? `&with_runtime.gte=${rtf.gte}` : '')
   const q = `?api_key=${API_KEY}&language=en-US&page=${page}`
 
   switch (source) {
@@ -55,31 +64,27 @@ function buildUrl(source, timeFilter, page) {
         return `${BASE}/trending/all/week${q}`
       if (timeFilter === 'day')
         return `${BASE}/trending/all/day${q}`
-      return `${BASE}/discover/movie${q}&sort_by=popularity.desc&vote_count.gte=10${dateParam}`
+      return `${BASE}/discover/movie${q}&sort_by=popularity.desc&vote_count.gte=10${dateParam}${runtimeParam}`
 
     case 'imdb':
-      // IMDb style — sorted by vote_average, lots of votes = well-known films
       if (timeFilter === 'alltime')
-        return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=5000`
-      return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=100${dateParam}`
+        return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=5000${runtimeParam}`
+      return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=100${dateParam}${runtimeParam}`
 
     case 'rottentomato':
-      // RT style — popularity based
       if (timeFilter === 'alltime')
-        return `${BASE}/discover/movie${q}&sort_by=popularity.desc&vote_count.gte=2000`
-      return `${BASE}/discover/movie${q}&sort_by=popularity.desc&vote_count.gte=5${dateParam}`
+        return `${BASE}/discover/movie${q}&sort_by=popularity.desc&vote_count.gte=2000${runtimeParam}`
+      return `${BASE}/discover/movie${q}&sort_by=popularity.desc&vote_count.gte=5${dateParam}${runtimeParam}`
 
     case 'metacritic':
-      // Metacritic style — critical score focused
       if (timeFilter === 'alltime')
-        return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=1000`
-      return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=10${dateParam}`
+        return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=1000${runtimeParam}`
+      return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=10${dateParam}${runtimeParam}`
 
     case 'letterboxd':
-      // Letterboxd style — cinephile taste, english-heavy
       if (timeFilter === 'alltime')
-        return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=200&with_original_language=en`
-      return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=5&with_original_language=en${dateParam}`
+        return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=200&with_original_language=en${runtimeParam}`
+      return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=5&with_original_language=en${dateParam}${runtimeParam}`
 
     case 'nowplaying':
       return `${BASE}/movie/now_playing${q}`
@@ -95,6 +100,7 @@ export default function Dashboard({ onAddFilm, refreshKey, onFilmClick }) {
   const [featured,   setFeatured]   = useState(null)
   const [source,     setSource]     = useState('tmdb')
   const [timeFilter, setTimeFilter] = useState('week')
+  const [runtimeFilter, setRuntimeFilter] = useState('any')
   const [page,       setPage]       = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [loading,    setLoading]    = useState(false)
@@ -107,7 +113,7 @@ export default function Dashboard({ onAddFilm, refreshKey, onFilmClick }) {
     const id = ++fetchId.current
     setLoading(true)
     setNoResults(false)
-    fetch(buildUrl(source, timeFilter, page))
+    fetch(buildUrl(source, timeFilter, page, runtimeFilter))
       .then(r => r.json())
       .then(data => {
         if (id !== fetchId.current) return
@@ -119,7 +125,7 @@ export default function Dashboard({ onAddFilm, refreshKey, onFilmClick }) {
         setLoading(false)
       })
       .catch(() => { if (id !== fetchId.current) return; setItems([]); setNoResults(true); setLoading(false) })
-  }, [source, timeFilter, page])
+  }, [source, timeFilter, page, runtimeFilter])
 
   const loadStats = async () => {
     const { data } = await supabase.from('films').select('runtime, user_rating, vote_average')
@@ -132,8 +138,9 @@ export default function Dashboard({ onAddFilm, refreshKey, onFilmClick }) {
     setStats({ total, watchtime, avgRating, gems })
   }
 
-  const changeSource = (s) => { if (s === source) return; setPage(1); setSource(s) }
-  const changeTime   = (t) => { if (t === timeFilter) return; setPage(1); setTimeFilter(t) }
+  const changeSource  = (s) => { if (s === source) return; setPage(1); setSource(s) }
+  const changeTime    = (t) => { if (t === timeFilter) return; setPage(1); setTimeFilter(t) }
+  const changeRuntime = (r) => { if (r === runtimeFilter) return; setPage(1); setRuntimeFilter(r) }
   const goToPage     = (p) => { if (p < 1 || p > totalPages || p === page) return; setPage(p) }
 
   const src  = SOURCES.find(s => s.key === source)
@@ -192,12 +199,23 @@ export default function Dashboard({ onAddFilm, refreshKey, onFilmClick }) {
             </div>
           </div>
           <div className="trending-controls-bottom">
-            <div className="time-tabs">
-              {showTimeFilter ? TIME_FILTERS.map(t => (
-                <button key={t.key} className={`time-tab${timeFilter === t.key ? ' active' : ''}`} onClick={() => changeTime(t.key)}>
-                  {t.label}
-                </button>
-              )) : <span className="time-note mono">🎭 Current cinema releases</span>}
+            <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+              <div className="time-tabs">
+                {showTimeFilter ? TIME_FILTERS.map(t => (
+                  <button key={t.key} className={`time-tab${timeFilter === t.key ? ' active' : ''}`} onClick={() => changeTime(t.key)}>
+                    {t.label}
+                  </button>
+                )) : <span className="time-note mono">🎭 Current cinema releases</span>}
+              </div>
+              {source !== 'nowplaying' && source !== 'tmdb' && (
+                <div className="time-tabs">
+                  {RUNTIME_FILTERS.map(r => (
+                    <button key={r.key} className={`time-tab${runtimeFilter === r.key ? ' active' : ''}`} onClick={() => changeRuntime(r.key)}>
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="page-controls">
               <span className="page-info mono">
