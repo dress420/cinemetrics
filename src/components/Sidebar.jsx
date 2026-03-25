@@ -14,10 +14,16 @@ const nav = [
   {
     section: 'DISCOVERY',
     items: [
-      { to: '/recommendations', label: 'AI Recommendations', icon: '⟁' },
+      { to: '/tonights-pick', label: "Tonight's Pick", icon: '🎯' },
+      { to: '/nl-search', label: 'AI Search', icon: '⟁' },
+      { to: '/vibes', label: 'Vibes', icon: '✦' },
       { to: '/mood', label: 'Mood Engine', icon: '◬' },
-      { to: '/gems', label: 'Hidden Gems', icon: '◈' },
+      { to: '/recommendations', label: 'Recommendations', icon: '⟁' },
+      { to: '/gems', label: 'Hidden Gems', icon: '💎' },
       { to: '/rabbit-hole', label: 'Rabbit Hole', icon: '⊙' },
+      { to: '/two-player', label: 'Two-Player', icon: '⚔' },
+      { to: '/time-budget', label: 'Time Budget', icon: '⏱' },
+      { to: '/streaming', label: 'Streaming', icon: '📡' },
     ],
   },
   {
@@ -43,7 +49,7 @@ export default function Sidebar({ filmCount }) {
     <aside className="sidebar">
       <div className="logo">
         <div className="logo-text">CINE<span>METRICS</span></div>
-        <div className="logo-sub">FILM INTELLIGENCE v2.0</div>
+        <div className="logo-sub">FILM INTELLIGENCE v3.0</div>
       </div>
 
       <nav className="nav">
@@ -69,6 +75,9 @@ export default function Sidebar({ filmCount }) {
       </nav>
 
       <div className="sidebar-footer">
+        <div className="search-hint mono" style={{ fontSize: 10, color: 'var(--text4)', marginBottom: 10 }}>
+          ⌘K Quick Search
+        </div>
         <div className="user-pill">
           <div className="user-avatar">D</div>
           <div className="user-name">dress420</div>
