@@ -51,46 +51,30 @@ function getDateRange(timeFilter) {
 
 function buildUrl(source, timeFilter, page, runtimeFilter) {
   const range = getDateRange(timeFilter)
-  const dateParam = range
-    ? `&primary_release_date.gte=${range.gte}&primary_release_date.lte=${range.lte}`
-    : ''
+  const dateParam = range ? `&primary_release_date.gte=${range.gte}&primary_release_date.lte=${range.lte}` : ''
   const rtf = RUNTIME_FILTERS.find(r => r.key === runtimeFilter) || RUNTIME_FILTERS[0]
   const runtimeParam = (rtf.lte ? `&with_runtime.lte=${rtf.lte}` : '') + (rtf.gte ? `&with_runtime.gte=${rtf.gte}` : '')
   const q = `?api_key=${API_KEY}&language=en-US&page=${page}`
 
   switch (source) {
     case 'tmdb':
-      if (timeFilter === 'alltime' || timeFilter === 'week')
-        return `${BASE}/trending/all/week${q}`
-      if (timeFilter === 'day')
-        return `${BASE}/trending/all/day${q}`
+      if (timeFilter === 'alltime' || timeFilter === 'week') return `${BASE}/trending/all/week${q}`
+      if (timeFilter === 'day') return `${BASE}/trending/all/day${q}`
       return `${BASE}/discover/movie${q}&sort_by=popularity.desc&vote_count.gte=10${dateParam}${runtimeParam}`
-
     case 'imdb':
-      if (timeFilter === 'alltime')
-        return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=5000${runtimeParam}`
+      if (timeFilter === 'alltime') return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=5000${runtimeParam}`
       return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=100${dateParam}${runtimeParam}`
-
     case 'rottentomato':
-      if (timeFilter === 'alltime')
-        return `${BASE}/discover/movie${q}&sort_by=popularity.desc&vote_count.gte=2000${runtimeParam}`
+      if (timeFilter === 'alltime') return `${BASE}/discover/movie${q}&sort_by=popularity.desc&vote_count.gte=2000${runtimeParam}`
       return `${BASE}/discover/movie${q}&sort_by=popularity.desc&vote_count.gte=5${dateParam}${runtimeParam}`
-
     case 'metacritic':
-      if (timeFilter === 'alltime')
-        return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=1000${runtimeParam}`
+      if (timeFilter === 'alltime') return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=1000${runtimeParam}`
       return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=10${dateParam}${runtimeParam}`
-
     case 'letterboxd':
-      if (timeFilter === 'alltime')
-        return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=200&with_original_language=en${runtimeParam}`
+      if (timeFilter === 'alltime') return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=200&with_original_language=en${runtimeParam}`
       return `${BASE}/discover/movie${q}&sort_by=vote_average.desc&vote_count.gte=5&with_original_language=en${dateParam}${runtimeParam}`
-
-    case 'nowplaying':
-      return `${BASE}/movie/now_playing${q}`
-
-    default:
-      return `${BASE}/trending/all/week${q}`
+    case 'nowplaying': return `${BASE}/movie/now_playing${q}`
+    default: return `${BASE}/trending/all/week${q}`
   }
 }
 
@@ -157,135 +141,133 @@ export default function Dashboard({ onAddFilm, refreshKey, onFilmClick }) {
 
   return (
     <div className="dashboard">
-      <div className="dashboard-inner">
-        <div className="stats-row">
-          <div className="stat-card">
-            <div className="stat-label">Films logged</div>
-            <div className="stat-value">{stats.total}<span className="stat-unit">films</span></div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Watchtime</div>
-            <div className="stat-value">{stats.watchtime}<span className="stat-unit">hrs</span></div>
-            <div className="stat-sub">{days} days of your life</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Avg rating</div>
-            <div className="stat-value">{stats.avgRating || '—'}<span className="stat-unit">/10</span></div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Hidden gems</div>
-            <div className="stat-value">{stats.gems}<span className="stat-unit">found</span></div>
-          </div>
-          <div className="stat-card add-card" onClick={onAddFilm}>
-            <div className="add-icon">+</div>
-            <div className="add-label">ADD</div>
-          </div>
+      <div className="stats-row">
+        <div className="stat-card">
+          <div className="stat-label">Films Logged</div>
+          <div className="stat-value">{stats.total}<span className="stat-unit">films</span></div>
         </div>
+        <div className="stat-card">
+          <div className="stat-label">Watchtime</div>
+          <div className="stat-value">{stats.watchtime}<span className="stat-unit">hrs</span></div>
+          <div className="stat-sub">{days} days of your life</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-label">Avg Rating</div>
+          <div className="stat-value">{stats.avgRating || '—'}<span className="stat-unit">/10</span></div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-label">Hidden Gems</div>
+          <div className="stat-value">{stats.gems}<span className="stat-unit">found</span></div>
+        </div>
+        <div className="stat-card add-card" onClick={onAddFilm}>
+          <div className="add-icon">+</div>
+          <div className="add-label">Add Film</div>
+        </div>
+      </div>
 
-        <div className="trending-section">
-          <div className="trending-controls">
-            <div className="trending-controls-top">
-              <span className="trending-title-label">TRENDING</span>
-              <div className="source-tabs">
-                {SOURCES.map(s => (
-                  <button
-                    key={s.key}
-                    className={`source-tab${source === s.key ? ' active' : ''}`}
-                    style={source === s.key ? { borderColor: s.color, color: s.color, background: `${s.color}14` } : {}}
-                    onClick={() => changeSource(s.key)}
-                  >
-                    <span className="source-dot" style={{ background: s.color }} />
-                    {s.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="trending-controls-bottom">
-              <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
-                <div className="time-tabs">
-                  {showTimeFilter ? TIME_FILTERS.map(t => (
-                    <button key={t.key} className={`time-tab${timeFilter === t.key ? ' active' : ''}`} onClick={() => changeTime(t.key)}>
-                      {t.label}
-                    </button>
-                  )) : <span className="time-note mono">Current cinema releases</span>}
-                </div>
-                {source !== 'nowplaying' && source !== 'tmdb' && (
-                  <div className="time-tabs">
-                    {RUNTIME_FILTERS.map(r => (
-                      <button key={r.key} className={`time-tab${runtimeFilter === r.key ? ' active' : ''}`} onClick={() => changeRuntime(r.key)}>
-                        {r.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="page-controls">
-                <span className="page-info mono">
-                  {loading ? 'Loading...' : noResults ? 'No results' : `#${rank(0)}–#${rank(items.length - 1)} · page ${page}/${totalPages}`}
-                </span>
-                <div className="pagination">
-                  <button className="page-btn" onClick={() => goToPage(1)} disabled={page === 1}>«</button>
-                  <button className="page-btn" onClick={() => goToPage(page - 1)} disabled={page === 1}>‹</button>
-                  {pageButtons().map(p => (
-                    <button key={p} className={`page-btn${page === p ? ' active' : ''}`} onClick={() => goToPage(p)}>{p}</button>
-                  ))}
-                  <button className="page-btn" onClick={() => goToPage(page + 1)} disabled={page >= totalPages}>›</button>
-                  <button className="page-btn" onClick={() => goToPage(totalPages)} disabled={page >= totalPages}>»</button>
-                </div>
-              </div>
+      <div className="trending-section">
+        <div className="trending-controls">
+          <div className="trending-controls-top">
+            <span className="trending-title-label">TRENDING</span>
+            <div className="source-tabs">
+              {SOURCES.map(s => (
+                <button
+                  key={s.key}
+                  className={`source-tab${source === s.key ? ' active' : ''}`}
+                  style={source === s.key ? { borderColor: s.color, color: s.color, background: `${s.color}14` } : {}}
+                  onClick={() => changeSource(s.key)}
+                >
+                  <span className="source-dot" style={{ background: s.color }} />
+                  {s.label}
+                </button>
+              ))}
             </div>
           </div>
-
-          {loading ? (
-            <div className="trending-loading">Loading {src?.label}...</div>
-          ) : noResults ? (
-            <div className="trending-loading">No films found — try a wider time period</div>
-          ) : (
-            <div className="trending-layout">
-              {featured && (
-                <div
-                  className="trending-featured"
-                  style={{ backgroundImage: `url(https://image.tmdb.org/t/p/w1280${featured.backdrop_path || featured.poster_path})` }}
-                  onClick={() => onFilmClick && onFilmClick(featured)}
-                >
-                  <div className="trending-featured-overlay">
-                    <div className="trending-featured-badge" style={{ color: src?.color }}>
-                      #{rank(items.indexOf(featured))} ON {src?.label?.toUpperCase()}
-                    </div>
-                    <div className="trending-featured-title">{featured.title || featured.name}</div>
-                    <div className="trending-featured-meta">
-                      {featured.media_type === 'tv' ? 'Series' : 'Film'} &middot;{' '}
-                      {(featured.release_date || featured.first_air_date || '—').split('-')[0]} &middot; {featured.vote_average?.toFixed(1)}
-                    </div>
-                    {featured.overview && (
-                      <div className="trending-featured-overview">{featured.overview.slice(0, 220)}...</div>
-                    )}
-                    <div className="trending-featured-hint mono">Click for ratings & details →</div>
-                  </div>
+          <div className="trending-controls-bottom">
+            <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+              <div className="time-tabs">
+                {showTimeFilter ? TIME_FILTERS.map(t => (
+                  <button key={t.key} className={`time-tab${timeFilter === t.key ? ' active' : ''}`} onClick={() => changeTime(t.key)}>
+                    {t.label}
+                  </button>
+                )) : <span className="time-note mono">Current cinema releases</span>}
+              </div>
+              {source !== 'nowplaying' && source !== 'tmdb' && (
+                <div className="time-tabs">
+                  {RUNTIME_FILTERS.map(r => (
+                    <button key={r.key} className={`time-tab${runtimeFilter === r.key ? ' active' : ''}`} onClick={() => changeRuntime(r.key)}>
+                      {r.label}
+                    </button>
+                  ))}
                 </div>
               )}
-              <div className="trending-list-side">
-                {items.map((t, i) => (
-                  <div
-                    key={`${t.id}-${i}`}
-                    className={`trending-side-item${featured?.id === t.id ? ' featured-active' : ''}`}
-                    onClick={() => setFeatured(t)}
-                  >
-                    <div className="trending-side-rank" style={{ color: src?.color }}>#{rank(i)}</div>
-                    {t.poster_path
-                      ? <img className="trending-side-thumb" src={`${IMG_THUMB}${t.poster_path}`} alt={t.title || t.name} />
-                      : <div className="trending-side-no-img">{(t.title || t.name)?.charAt(0)}</div>
-                    }
-                    <div className="trending-side-info">
-                      <div className="trending-side-title">{t.title || t.name}</div>
-                      <div className="trending-side-meta mono">{t.vote_average?.toFixed(1)} · {(t.release_date || t.first_air_date || '').split('-')[0]}</div>
-                    </div>
-                  </div>
+            </div>
+            <div className="page-controls">
+              <span className="page-info mono">
+                {loading ? 'Loading...' : noResults ? 'No results' : `#${rank(0)}–#${rank(items.length - 1)} · page ${page}/${totalPages}`}
+              </span>
+              <div className="pagination">
+                <button className="page-btn" onClick={() => goToPage(1)} disabled={page === 1}>«</button>
+                <button className="page-btn" onClick={() => goToPage(page - 1)} disabled={page === 1}>‹</button>
+                {pageButtons().map(p => (
+                  <button key={p} className={`page-btn${page === p ? ' active' : ''}`} onClick={() => goToPage(p)}>{p}</button>
                 ))}
+                <button className="page-btn" onClick={() => goToPage(page + 1)} disabled={page >= totalPages}>›</button>
+                <button className="page-btn" onClick={() => goToPage(totalPages)} disabled={page >= totalPages}>»</button>
               </div>
             </div>
-          )}
+          </div>
         </div>
+
+        {loading ? (
+          <div className="trending-loading">Loading {src?.label}...</div>
+        ) : noResults ? (
+          <div className="trending-loading">No films found — try a wider time period</div>
+        ) : (
+          <div className="trending-layout">
+            {featured && (
+              <div
+                className="trending-featured"
+                style={{ backgroundImage: `url(https://image.tmdb.org/t/p/w1280${featured.backdrop_path || featured.poster_path})` }}
+                onClick={() => onFilmClick && onFilmClick(featured)}
+              >
+                <div className="trending-featured-overlay">
+                  <div className="trending-featured-badge" style={{ color: src?.color }}>
+                    #{rank(items.indexOf(featured))} ON {src?.label?.toUpperCase()}
+                  </div>
+                  <div className="trending-featured-title">{featured.title || featured.name}</div>
+                  <div className="trending-featured-meta">
+                    {featured.media_type === 'tv' ? 'Series' : 'Film'} &middot;{' '}
+                    {(featured.release_date || featured.first_air_date || '—').split('-')[0]} &middot; {featured.vote_average?.toFixed(1)}
+                  </div>
+                  {featured.overview && (
+                    <div className="trending-featured-overview">{featured.overview.slice(0, 220)}...</div>
+                  )}
+                  <div className="trending-featured-hint mono">Click for ratings & details →</div>
+                </div>
+              </div>
+            )}
+            <div className="trending-list-side">
+              {items.map((t, i) => (
+                <div
+                  key={`${t.id}-${i}`}
+                  className={`trending-side-item${featured?.id === t.id ? ' featured-active' : ''}`}
+                  onClick={() => setFeatured(t)}
+                >
+                  <div className="trending-side-rank" style={{ color: src?.color }}>#{rank(i)}</div>
+                  {t.poster_path
+                    ? <img className="trending-side-thumb" src={`${IMG_THUMB}${t.poster_path}`} alt={t.title || t.name} />
+                    : <div className="trending-side-no-img">{(t.title || t.name)?.charAt(0)}</div>
+                  }
+                  <div className="trending-side-info">
+                    <div className="trending-side-title">{t.title || t.name}</div>
+                    <div className="trending-side-meta mono">{t.vote_average?.toFixed(1)} · {(t.release_date || t.first_air_date || '').split('-')[0]}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
