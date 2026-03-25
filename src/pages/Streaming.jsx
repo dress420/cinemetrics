@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { IMG_THUMB } from '../lib/tmdb'
+import MiniCard from '../components/MiniCard'
 import './Streaming.css'
 
 const WATCHMODE_KEY = 'iyrAi3e0WTtDLeIF4ywyes6ySKfAVOjrhNTDiRJN'
@@ -28,72 +28,36 @@ export default function StreamingFilter() {
   const [totalPages, setTotalPages] = useState(1)
   const [error, setError] = useState('')
 
-  const toggle = (id) => {
-    setSelected(prev =>
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    )
-  }
+  const toggle = (id) => { setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]) }
 
   const search = async (p = 1) => {
     if (selected.length === 0) return
-    setLoading(true)
-    setError('')
-    setPage(p)
-
+    setLoading(true); setError(''); setPage(p)
     try {
-      const sourceIds = selected.join(',')
-      const res = await fetch(
-        `https://api.watchmode.com/v1/list-titles/?apiKey=${WATCHMODE_KEY}&source_ids=${sourceIds}&types=movie&sort_by=popularity_desc&page=${p}&limit=40`
-      )
-
+      const res = await fetch(`https://api.watchmode.com/v1/list-titles/?apiKey=${WATCHMODE_KEY}&source_ids=${selected.join(',')}&types=movie&sort_by=popularity_desc&page=${p}&limit=40`)
       if (!res.ok) throw new Error(`Watchmode API error: ${res.status}`)
-
       const data = await res.json()
-      const titles = data.titles || []
       setTotalPages(Math.min(data.total_pages || 1, 10))
-
-      // Enrich with TMDB posters — batch 4 at a time
       const enriched = []
-      for (let i = 0; i < titles.length; i += 4) {
-        const batch = titles.slice(i, i + 4)
-        const results = await Promise.all(
-          batch.map(async (t) => {
-            try {
-              const tmdbRes = await fetch(
-                `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(t.title)}&year=${t.year}`
-              )
-              const tmdbData = await tmdbRes.json()
-              const match = (tmdbData.results || [])[0]
-              return {
-                id: t.id,
-                title: t.title,
-                year: t.year,
-                tmdb_id: match?.id || t.tmdb_id,
-                poster_path: match?.poster_path || null,
-                vote_average: match?.vote_average || null,
-              }
-            } catch {
-              return { id: t.id, title: t.title, year: t.year, poster_path: null }
-            }
-          })
-        )
+      for (let i = 0; i < (data.titles || []).length; i += 4) {
+        const batch = (data.titles || []).slice(i, i + 4)
+        const results = await Promise.all(batch.map(async (t) => {
+          try {
+            const r = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(t.title)}&year=${t.year}`)
+            const d = await r.json()
+            const m = (d.results || [])[0]
+            return { id: m?.id || t.id, tmdb_id: m?.id, title: t.title, year: t.year, poster_path: m?.poster_path, backdrop_path: m?.backdrop_path, vote_average: m?.vote_average, overview: m?.overview, media_type: 'movie' }
+          } catch { return { id: t.id, title: t.title, release_year: t.year, poster_path: null, media_type: 'movie' } }
+        }))
         enriched.push(...results)
-        if (i + 4 < titles.length) await new Promise(r => setTimeout(r, 250))
+        if (i + 4 < (data.titles || []).length) await new Promise(r => setTimeout(r, 250))
       }
-
       setFilms(enriched)
-    } catch (e) {
-      setError(e.message || 'Failed to load. Try again.')
-      setFilms([])
-    }
+    } catch (e) { setError(e.message || 'Failed to load.'); setFilms([]) }
     setLoading(false)
   }
 
-  useEffect(() => {
-    if (selected.length > 0) search(1)
-    else setFilms([])
-  }, [selected])
-
+  useEffect(() => { if (selected.length > 0) search(1); else setFilms([]) }, [selected])
   const activeNames = selected.map(id => SERVICES.find(s => s.id === id)?.name).filter(Boolean)
 
   return (
@@ -102,57 +66,21 @@ export default function StreamingFilter() {
         <div className="page-title">Streaming Filter</div>
         <div className="page-sub">Pick your services — see what's available right now.</div>
       </div>
-
       <div className="sf-services">
         {SERVICES.map(s => (
-          <button
-            key={s.id}
-            className={`sf-service${selected.includes(s.id) ? ' active' : ''}`}
-            onClick={() => toggle(s.id)}
-            style={selected.includes(s.id) ? { borderColor: s.color, background: `${s.color}15` } : {}}
-          >
+          <button key={s.id} className={`sf-service${selected.includes(s.id) ? ' active' : ''}`} onClick={() => toggle(s.id)}
+            style={selected.includes(s.id) ? { borderColor: s.color, background: `${s.color}15` } : {}}>
             <span className="sf-service-icon">{s.icon}</span>
             <span className="sf-service-name">{s.name}</span>
           </button>
         ))}
       </div>
-
       {error && <div className="sf-error mono">{error}</div>}
-
-      {loading && (
-        <div className="sf-loading mono">
-          Searching {activeNames.join(' + ')}...
-        </div>
-      )}
-
+      {loading && <div className="sf-loading mono">Searching {activeNames.join(' + ')}...</div>}
       {!loading && films.length > 0 && (
         <>
-          <div className="sf-results-header">
-            <span className="sf-results-count mono">
-              {films.length} films on {activeNames.join(', ')}
-            </span>
-          </div>
-          <div className="sf-grid">
-            {films.map(f => (
-              <div key={f.id} className="sf-film">
-                <div className="sf-film-poster">
-                  {f.poster_path ? (
-                    <img src={`${IMG_THUMB}${f.poster_path}`} alt={f.title} loading="lazy" />
-                  ) : (
-                    <div className="sf-film-no-poster">{f.title?.charAt(0)}</div>
-                  )}
-                  {f.vote_average > 0 && (
-                    <div className="sf-film-score mono">{f.vote_average.toFixed(1)}</div>
-                  )}
-                </div>
-                <div className="sf-film-info">
-                  <div className="sf-film-title">{f.title}</div>
-                  <div className="sf-film-year mono">{f.year}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-
+          <div className="sf-results-count mono">{films.length} films on {activeNames.join(', ')}</div>
+          <div className="mc-grid">{films.map(f => <MiniCard key={f.id} film={f} />)}</div>
           {totalPages > 1 && (
             <div className="sf-pagination">
               <button className="btn-secondary" onClick={() => search(page - 1)} disabled={page <= 1}>← Prev</button>
@@ -162,20 +90,7 @@ export default function StreamingFilter() {
           )}
         </>
       )}
-
-      {!loading && selected.length === 0 && (
-        <div className="sf-prompt">
-          <div className="sf-prompt-icon">📡</div>
-          <div className="sf-prompt-text mono">Select streaming services above</div>
-        </div>
-      )}
-
-      {!loading && selected.length > 0 && films.length === 0 && !error && (
-        <div className="sf-prompt">
-          <div className="sf-prompt-icon">🎬</div>
-          <div className="sf-prompt-text mono">No films found on selected services</div>
-        </div>
-      )}
+      {!loading && selected.length === 0 && <div className="sf-prompt"><div className="sf-prompt-icon">📡</div><div className="sf-prompt-text mono">Select streaming services above</div></div>}
     </div>
   )
 }

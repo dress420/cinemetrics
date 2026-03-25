@@ -7,11 +7,12 @@
 .tp-error { color: var(--red); font-size: 13px; text-align: center; padding: 40px; }
 
 .tp-hero {
-  border-radius: var(--radius-xl); overflow: hidden;
+  border-radius: var(--radius-xl); overflow: hidden; cursor: pointer;
   background-size: cover; background-position: center;
-  min-height: 440px; position: relative;
-  border: 1px solid var(--border);
+  min-height: 440px; position: relative; border: 1px solid var(--border);
+  transition: border-color .2s;
 }
+.tp-hero:hover { border-color: var(--accent); }
 .tp-hero-overlay {
   min-height: 440px; display: flex; align-items: flex-end;
   background: linear-gradient(to top, rgba(8,10,13,1) 0%, rgba(8,10,13,.85) 40%, rgba(8,10,13,.4) 70%, transparent 100%);
@@ -26,9 +27,11 @@
 .tp-genres { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
 .tp-reason { font-size: 16px; color: rgba(255,255,255,.8); line-height: 1.7; margin-top: 18px; font-weight: 400; max-width: 600px; }
 .tp-overview { font-size: 14px; color: rgba(255,255,255,.35); line-height: 1.6; margin-top: 12px; font-weight: 300; }
+.tp-hint { font-size: 11px; color: rgba(255,255,255,.3); margin-top: 16px; letter-spacing: .04em; }
 
-@media (max-width: 768px) {
-  .tp-hero-row { flex-direction: column; }
-  .tp-poster { width: 100px; height: 150px; }
-  .tp-title { font-size: 26px; }
-}
+.mobile-mode .tp-hero { min-height: 360px; }
+.mobile-mode .tp-hero-row { flex-direction: column; gap: 16px; }
+.mobile-mode .tp-poster { width: 100px; height: 150px; }
+.mobile-mode .tp-title { font-size: 26px; }
+.mobile-mode .tp-hero-content { padding: 24px 20px; }
+.mobile-mode .tp-reason { font-size: 14px; }

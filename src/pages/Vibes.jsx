@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { discoverMovies, IMG_THUMB } from '../lib/tmdb'
+import { discoverMovies } from '../lib/tmdb'
+import MiniCard from '../components/MiniCard'
 import './Vibes.css'
 
 const VIBES = [
@@ -25,15 +26,9 @@ export default function Vibes() {
   const [loading, setLoading] = useState(false)
 
   const selectVibe = async (vibe) => {
-    setSelected(vibe)
-    setLoading(true)
+    setSelected(vibe); setLoading(true)
     try {
-      const params = {
-        with_genres: vibe.genres,
-        sort_by: vibe.sort,
-        'vote_count.gte': vibe.voteGte,
-        'vote_average.gte': 6,
-      }
+      const params = { with_genres: vibe.genres, sort_by: vibe.sort, 'vote_count.gte': vibe.voteGte, 'vote_average.gte': 6 }
       if (vibe.voteLte) params['vote_count.lte'] = vibe.voteLte
       const data = await discoverMovies(params)
       setFilms((data.results || []).filter(r => r.poster_path).slice(0, 24))
@@ -47,57 +42,25 @@ export default function Vibes() {
         <div className="page-title">Vibes</div>
         <div className="page-sub">Pick a vibe. We'll find the films.</div>
       </div>
-
       <div className="vibes-grid">
         {VIBES.map(v => (
-          <button
-            key={v.key}
-            className={`vibe-card${selected?.key === v.key ? ' active' : ''}`}
-            onClick={() => selectVibe(v)}
-          >
+          <button key={v.key} className={`vibe-card${selected?.key === v.key ? ' active' : ''}`} onClick={() => selectVibe(v)}>
             <span className="vibe-emoji">{v.emoji}</span>
             <span className="vibe-label">{v.label}</span>
           </button>
         ))}
       </div>
-
       {loading && <div className="vibes-loading mono">Finding your vibe...</div>}
-
       {!loading && selected && films.length > 0 && (
         <>
           <div className="vibes-results-header">
             <span className="vibes-results-emoji">{selected.emoji}</span>
             <span className="vibes-results-title">{selected.label}</span>
           </div>
-          <div className="vibes-films">
-            {films.map(f => (
-              <div key={f.id} className="sf-film">
-                <div className="sf-film-poster">
-                  <img src={`${IMG_THUMB}${f.poster_path}`} alt={f.title} loading="lazy" />
-                  <div className="sf-film-score mono">{f.vote_average?.toFixed(1)}</div>
-                </div>
-                <div className="sf-film-info">
-                  <div className="sf-film-title">{f.title}</div>
-                  <div className="sf-film-year mono">{f.release_date?.split('-')[0]}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <div className="mc-grid">{films.map(f => <MiniCard key={f.id} film={f} />)}</div>
         </>
       )}
-
-      {!loading && selected && films.length === 0 && (
-        <div style={{ textAlign: 'center', padding: 40, color: 'var(--text4)', fontFamily: 'var(--mono)', fontSize: 13 }}>
-          No films found for this vibe — try another one
-        </div>
-      )}
-
-      {!selected && (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 20px', textAlign: 'center' }}>
-          <div style={{ fontSize: 48, opacity: .2, marginBottom: 16 }}>🎬</div>
-          <div style={{ fontSize: 14, color: 'var(--text4)', fontFamily: 'var(--mono)' }}>Select a vibe above</div>
-        </div>
-      )}
+      {!selected && <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 20px' }}><div style={{ fontSize: 48, opacity: .2, marginBottom: 16 }}>🎬</div><div className="mono" style={{ fontSize: 14, color: 'var(--text4)' }}>Select a vibe above</div></div>}
     </div>
   )
 }
