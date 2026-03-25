@@ -1,0 +1,85 @@
+.fdp-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.6);
+  backdrop-filter: blur(4px); z-index: 900;
+  display: flex; justify-content: flex-end;
+}
+.fdp-panel {
+  width: 480px; max-width: 100%; height: 100vh;
+  background: var(--bg); border-left: 1px solid var(--border);
+  overflow-y: auto; position: relative;
+  animation: slideIn .25s ease;
+}
+@keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+.fdp-close {
+  position: fixed; top: 16px; right: 492px; z-index: 910;
+  background: var(--bg2); color: var(--text2);
+  border: 1px solid var(--border); border-radius: 50%;
+  width: 36px; height: 36px; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.fdp-close:hover { background: var(--bg3); color: var(--text); }
+
+.fdp-backdrop { position: relative; height: 240px; overflow: hidden; }
+.fdp-backdrop img { width: 100%; height: 100%; object-fit: cover; }
+.fdp-backdrop-fade {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, var(--bg), transparent 60%);
+}
+
+.fdp-content { padding: 0 28px 40px; margin-top: -60px; position: relative; z-index: 1; }
+
+.fdp-top { display: flex; gap: 18px; margin-bottom: 24px; }
+.fdp-poster { width: 100px; height: 150px; border-radius: var(--radius-md); object-fit: cover; flex-shrink: 0; border: 2px solid var(--border); }
+.fdp-header { flex: 1; min-width: 0; }
+.fdp-title { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -.02em; line-height: 1.2; }
+.fdp-meta { font-size: 12px; color: var(--text3); margin-top: 6px; }
+.fdp-genres { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+
+.fdp-section { margin-bottom: 22px; }
+.fdp-section-title { font-size: 9px; letter-spacing: .14em; color: var(--text4); margin-bottom: 10px; text-transform: uppercase; }
+
+.fdp-scores { display: flex; gap: 10px; }
+.fdp-score-card {
+  flex: 1; text-align: center; padding: 14px 8px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+.fdp-score-card.high { border-color: rgba(77,229,160,.2); }
+.fdp-score-card.mid { border-color: rgba(229,201,77,.2); }
+.fdp-score-card.low { border-color: rgba(229,77,77,.2); }
+.fdp-score-val { font-size: 22px; font-weight: 800; font-family: var(--mono); }
+.fdp-score-card.high .fdp-score-val { color: var(--green); }
+.fdp-score-card.mid .fdp-score-val { color: var(--yellow); }
+.fdp-score-card.low .fdp-score-val { color: var(--red); }
+.fdp-score-label { font-size: 9px; color: var(--text4); margin-top: 4px; font-family: var(--mono); letter-spacing: .1em; }
+
+.fdp-overview { font-size: 14px; color: var(--text2); line-height: 1.7; font-weight: 300; }
+.fdp-director { font-size: 15px; color: var(--text); font-weight: 600; }
+.fdp-awards { font-size: 13px; color: var(--yellow); font-family: var(--mono); }
+
+.fdp-cast { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; }
+.fdp-cast-item { text-align: center; flex-shrink: 0; width: 64px; }
+.fdp-cast-img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; }
+.fdp-cast-placeholder {
+  width: 52px; height: 52px; border-radius: 50%; background: var(--bg3);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; color: var(--text4); margin: 0 auto;
+}
+.fdp-cast-name { font-size: 10px; color: var(--text2); margin-top: 6px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fdp-cast-char { font-size: 9px; color: var(--text4); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.fdp-similar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.fdp-similar-card { cursor: pointer; }
+.fdp-similar-card img { width: 100%; height: 180px; object-fit: cover; border-radius: var(--radius-md); border: 1px solid var(--border); }
+.fdp-similar-title { font-size: 11px; color: var(--text2); margin-top: 6px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.fdp-actions { margin-top: 24px; }
+.fdp-add-btn { width: 100%; padding: 14px; font-size: 15px; }
+.fdp-in-lib { text-align: center; padding: 14px; color: var(--green); font-size: 13px; background: rgba(77,229,160,.08); border-radius: var(--radius-md); }
+
+@media (max-width: 600px) {
+  .fdp-panel { width: 100%; }
+  .fdp-close { right: 16px; top: 16px; position: absolute; }
+}
