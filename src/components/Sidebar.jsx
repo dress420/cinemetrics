@@ -8,22 +8,22 @@ const nav = [
       { to: '/', label: 'Dashboard', icon: '⬡' },
       { to: '/library', label: 'My Library', icon: '◈', badge: true },
       { to: '/watchlist', label: 'Watchlist', icon: '◎' },
-      { to: '/watching', label: 'Currently Watching', icon: '◷' },
+      { to: '/watching', label: 'Watching', icon: '◷' },
     ],
   },
   {
     section: 'DISCOVERY',
     items: [
-      { to: '/tonights-pick', label: "Tonight's Pick", icon: '🎯' },
+      { to: '/tonights-pick', label: "Tonight's Pick", icon: '◉' },
       { to: '/nl-search', label: 'AI Search', icon: '⟁' },
       { to: '/vibes', label: 'Vibes', icon: '✦' },
       { to: '/mood', label: 'Mood Engine', icon: '◬' },
-      { to: '/recommendations', label: 'Recommendations', icon: '⟁' },
-      { to: '/gems', label: 'Hidden Gems', icon: '💎' },
+      { to: '/recommendations', label: 'Recommendations', icon: '⟐' },
+      { to: '/gems', label: 'Hidden Gems', icon: '◇' },
       { to: '/rabbit-hole', label: 'Rabbit Hole', icon: '⊙' },
       { to: '/two-player', label: 'Two-Player', icon: '⚔' },
       { to: '/time-budget', label: 'Time Budget', icon: '⏱' },
-      { to: '/streaming', label: 'Streaming', icon: '📡' },
+      { to: '/streaming', label: 'Streaming', icon: '▸' },
     ],
   },
   {
@@ -37,9 +37,8 @@ const nav = [
   {
     section: 'TOOLS',
     items: [
-      { to: '/franchise', label: 'Franchise Tracker', icon: '⊞' },
+      { to: '/franchise', label: 'Franchise', icon: '⊞' },
       { to: '/import', label: 'Import / Export', icon: '◧' },
-      { to: '/watchparty', label: 'Watchparty', icon: '⟳' },
     ],
   },
 ]
@@ -49,7 +48,6 @@ export default function Sidebar({ filmCount }) {
     <aside className="sidebar">
       <div className="logo">
         <div className="logo-text">CINE<span>METRICS</span></div>
-        <div className="logo-sub">FILM INTELLIGENCE v3.0</div>
       </div>
 
       <nav className="nav">
@@ -66,7 +64,7 @@ export default function Sidebar({ filmCount }) {
                 <span className="nav-icon">{item.icon}</span>
                 {item.label}
                 {item.badge && filmCount > 0 && (
-                  <span className="nav-badge accent">{filmCount}</span>
+                  <span className="nav-badge">{filmCount}</span>
                 )}
               </NavLink>
             ))}
@@ -75,9 +73,7 @@ export default function Sidebar({ filmCount }) {
       </nav>
 
       <div className="sidebar-footer">
-        <div className="search-hint mono" style={{ fontSize: 10, color: 'var(--text4)', marginBottom: 10 }}>
-          ⌘K Quick Search
-        </div>
+        <div className="search-hint mono">⌘K Quick Search</div>
         <div className="user-pill">
           <div className="user-avatar">D</div>
           <div className="user-name">dress420</div>
