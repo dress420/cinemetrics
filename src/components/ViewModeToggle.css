@@ -1,0 +1,30 @@
+.vmt-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 900;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, .4);
+  transition: all .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.vmt-btn:hover {
+  background: var(--bg4);
+  border-color: var(--accent);
+  transform: scale(1.08);
+}
+
+/* In mobile mode, move the toggle above the bottom nav */
+.mobile-mode .vmt-btn {
+  bottom: 80px;
+}
