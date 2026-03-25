@@ -1,0 +1,46 @@
+.library {
+  flex: 1; overflow-y: auto;
+  padding: 28px 32px;
+  display: flex; flex-direction: column; gap: 20px; min-width: 0;
+}
+.lib-topbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+
+.lib-controls {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 14px; flex-wrap: wrap;
+}
+.filter-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text3);
+  padding: 6px 16px; border-radius: 20px;
+  font-size: 12px; font-weight: 500;
+  display: flex; align-items: center; gap: 7px;
+  transition: all .15s;
+}
+.filter-btn:hover { border-color: var(--border2); color: var(--text2); background: rgba(255,255,255,.03); }
+.filter-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.filter-count { font-size: 10px; opacity: .5; font-family: var(--mono); }
+
+.lib-right { display: flex; gap: 8px; align-items: center; }
+.lib-right input  { width: 220px; }
+.lib-right select { width: 160px; }
+
+.library-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.lib-empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 80px 20px; text-align: center;
+}
+.lib-empty-icon { font-size: 44px; margin-bottom: 16px; opacity: .2; }
+.lib-empty-title { font-size: 18px; font-weight: 700; color: var(--text2); }
+.lib-empty-sub { font-size: 13px; color: var(--text4); margin-top: 8px; font-family: var(--mono); margin-bottom: 20px; }
+.lib-loading {
+  display: flex; align-items: center; justify-content: center;
+  padding: 80px; font-family: var(--mono); font-size: 13px; color: var(--text4);
+}

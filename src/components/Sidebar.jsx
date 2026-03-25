@@ -1,0 +1,79 @@
+import { NavLink } from 'react-router-dom'
+import './Sidebar.css'
+
+const nav = [
+  {
+    section: 'CORE',
+    items: [
+      { to: '/', label: 'Dashboard', icon: '⬡' },
+      { to: '/library', label: 'My Library', icon: '◈', badge: true },
+      { to: '/watchlist', label: 'Watchlist', icon: '◎' },
+      { to: '/watching', label: 'Currently Watching', icon: '◷' },
+    ],
+  },
+  {
+    section: 'DISCOVERY',
+    items: [
+      { to: '/recommendations', label: 'AI Recommendations', icon: '⟁' },
+      { to: '/mood', label: 'Mood Engine', icon: '◬' },
+      { to: '/gems', label: 'Hidden Gems', icon: '◈' },
+      { to: '/rabbit-hole', label: 'Rabbit Hole', icon: '⊙' },
+    ],
+  },
+  {
+    section: 'ANALYTICS',
+    items: [
+      { to: '/dna', label: 'DNA Profile', icon: '▦' },
+      { to: '/stats', label: 'Stats & Wrapped', icon: '◫' },
+      { to: '/heatmap', label: 'Actor Heatmap', icon: '▣' },
+    ],
+  },
+  {
+    section: 'TOOLS',
+    items: [
+      { to: '/franchise', label: 'Franchise Tracker', icon: '⊞' },
+      { to: '/import', label: 'Import / Export', icon: '◧' },
+      { to: '/watchparty', label: 'Watchparty', icon: '⟳' },
+    ],
+  },
+]
+
+export default function Sidebar({ filmCount }) {
+  return (
+    <aside className="sidebar">
+      <div className="logo">
+        <div className="logo-text">CINE<span>METRICS</span></div>
+        <div className="logo-sub">FILM INTELLIGENCE v2.0</div>
+      </div>
+
+      <nav className="nav">
+        {nav.map((group) => (
+          <div key={group.section}>
+            <div className="nav-section">{group.section}</div>
+            {group.items.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === '/'}
+                className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+              >
+                <span className="nav-icon">{item.icon}</span>
+                {item.label}
+                {item.badge && filmCount > 0 && (
+                  <span className="nav-badge accent">{filmCount}</span>
+                )}
+              </NavLink>
+            ))}
+          </div>
+        ))}
+      </nav>
+
+      <div className="sidebar-footer">
+        <div className="user-pill">
+          <div className="user-avatar">D</div>
+          <div className="user-name">dress420</div>
+        </div>
+      </div>
+    </aside>
+  )
+}
