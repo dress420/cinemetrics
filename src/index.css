@@ -153,3 +153,202 @@ button { font-family: var(--sans); cursor: pointer; border: none; border-radius:
 /* Page headers */
 .page-title { font-size: 26px; font-weight: 800; color: var(--text); letter-spacing: -.02em; }
 .page-sub { font-size: 13px; color: var(--text3); margin-top: 4px; font-family: var(--mono); }
+
+/* ============================================ */
+/* MOBILE MODE OVERRIDES                        */
+/* ============================================ */
+
+.mobile-mode .sidebar { display: none; }
+
+/* All pages in mobile mode */
+.mobile-mode .dashboard,
+.mobile-mode .library,
+.mobile-mode .gems-page,
+.mobile-mode .dna-page,
+.mobile-mode .stats-page,
+.mobile-mode .mood-page,
+.mobile-mode .rabbit-page,
+.mobile-mode .recs-page,
+.mobile-mode .vibes-page,
+.mobile-mode .nls-page,
+.mobile-mode .tp-page,
+.mobile-mode .tp2-page,
+.mobile-mode .tb-page,
+.mobile-mode .fr-page,
+.mobile-mode .hm-page,
+.mobile-mode .ie-page,
+.mobile-mode .sf-page {
+  padding: 16px 14px;
+}
+
+/* Page headers smaller on mobile */
+.mobile-mode .page-title { font-size: 22px; }
+.mobile-mode .page-sub { font-size: 12px; }
+
+/* Dashboard stats row */
+.mobile-mode .stats-row {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.mobile-mode .stats-row .add-card {
+  grid-column: span 2;
+  padding: 14px;
+  flex-direction: row;
+  gap: 10px;
+}
+.mobile-mode .stat-card { padding: 14px 16px; }
+.mobile-mode .stat-value { font-size: 24px; }
+.mobile-mode .stat-label { font-size: 8px; }
+
+/* Trending section mobile */
+.mobile-mode .trending-layout {
+  grid-template-columns: 1fr;
+}
+.mobile-mode .trending-list-side {
+  border-left: none;
+  border-top: 1px solid var(--border);
+  max-height: 320px;
+}
+.mobile-mode .trending-featured { min-height: 300px; }
+.mobile-mode .trending-featured-title { font-size: 24px; }
+.mobile-mode .trending-featured-overlay { padding: 24px 20px; }
+.mobile-mode .trending-controls-top { padding: 10px 14px 8px; gap: 10px; }
+.mobile-mode .trending-controls-bottom { padding: 0 14px 10px; }
+.mobile-mode .source-tabs { gap: 4px; }
+.mobile-mode .source-tab { padding: 4px 10px; font-size: 10px; }
+.mobile-mode .time-tab { padding: 4px 8px; font-size: 10px; }
+
+/* Grids tighter on mobile */
+.mobile-mode .library-grid,
+.mobile-mode .mood-grid,
+.mobile-mode .recs-grid,
+.mobile-mode .rabbit-grid,
+.mobile-mode .vibes-films,
+.mobile-mode .nls-results,
+.mobile-mode .tp2-results,
+.mobile-mode .tb-films {
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+/* Film cards smaller */
+.mobile-mode .film-poster { height: 160px; }
+.mobile-mode .film-title { font-size: 11px; }
+.mobile-mode .film-meta { font-size: 9px; }
+.mobile-mode .film-info { padding: 8px 10px 10px; }
+
+/* Mood engine grid */
+.mobile-mode .mood-selector {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.mobile-mode .mood-option { padding: 16px 12px; }
+.mobile-mode .mood-option-emoji { font-size: 24px; }
+.mobile-mode .mood-option-label { font-size: 12px; }
+
+/* Vibes grid */
+.mobile-mode .vibes-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.mobile-mode .vibe-card { padding: 16px 12px; }
+.mobile-mode .vibe-emoji { font-size: 22px; }
+.mobile-mode .vibe-label { font-size: 11px; }
+
+/* Time Budget */
+.mobile-mode .tb-grid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.mobile-mode .tb-card { padding: 16px 8px; }
+
+/* Two-Player genres */
+.mobile-mode .tp2-genre-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.mobile-mode .tp2-genre { padding: 10px; font-size: 12px; }
+.mobile-mode .tp2-ai-pick { padding: 20px; }
+.mobile-mode .tp2-ai-title { font-size: 22px; }
+
+/* Tonight's Pick */
+.mobile-mode .tp-hero { min-height: 360px; }
+.mobile-mode .tp-hero-row { flex-direction: column; gap: 16px; }
+.mobile-mode .tp-poster { width: 100px; height: 150px; }
+.mobile-mode .tp-title { font-size: 26px; }
+.mobile-mode .tp-hero-content { padding: 24px 20px; }
+.mobile-mode .tp-reason { font-size: 14px; }
+
+/* DNA grid */
+.mobile-mode .dna-grid { grid-template-columns: 1fr; }
+.mobile-mode .personality-title { font-size: 26px; }
+.mobile-mode .dna-personality-card { padding: 22px; }
+.mobile-mode .dna-stats-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+
+/* Stats hero */
+.mobile-mode .stats-hero {
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 24px;
+}
+.mobile-mode .hero-num { font-size: 36px; }
+.mobile-mode .hero-divider { display: none; }
+.mobile-mode .hero-stat { width: calc(50% - 10px); }
+.mobile-mode .stats-grid { grid-template-columns: 1fr; }
+
+/* Hidden Gems */
+.mobile-mode .gem-item { gap: 12px; padding: 12px 14px; }
+.mobile-mode .gem-title { font-size: 14px; }
+.mobile-mode .gem-badge-value { font-size: 24px; }
+.mobile-mode .gem-scores { flex-direction: column; gap: 2px; }
+
+/* Actor Heatmap */
+.mobile-mode .hm-grid { gap: 8px; }
+.mobile-mode .hm-actor { width: 90px; padding: 10px; }
+.mobile-mode .hm-actor-img,
+.mobile-mode .hm-actor-placeholder { width: 48px; height: 48px; }
+
+/* Franchise */
+.mobile-mode .fr-film { gap: 10px; padding: 10px 12px; }
+.mobile-mode .fr-progress-card { padding: 18px 20px; }
+
+/* Import/Export */
+.mobile-mode .ie-grid { grid-template-columns: 1fr; }
+.mobile-mode .ie-card { padding: 20px; }
+.mobile-mode .ie-export-btns { flex-direction: column; }
+
+/* FilmDetailPanel full-width on mobile */
+.mobile-mode .fdp-panel { width: 100%; }
+.mobile-mode .fdp-close { right: 16px; top: 16px; position: absolute; }
+.mobile-mode .fdp-top { flex-direction: column; gap: 12px; }
+.mobile-mode .fdp-poster { width: 80px; height: 120px; }
+.mobile-mode .fdp-title { font-size: 20px; }
+.mobile-mode .fdp-scores { flex-wrap: wrap; }
+.mobile-mode .fdp-similar { grid-template-columns: repeat(2, 1fr); }
+
+/* Modal smaller padding */
+.mobile-mode .modal { padding: 20px; max-width: 100%; border-radius: 16px; }
+
+/* Library controls stack */
+.mobile-mode .lib-topbar { flex-direction: column; gap: 12px; }
+.mobile-mode .lib-controls { flex-direction: column; gap: 10px; }
+.mobile-mode .filter-row { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+.mobile-mode .filter-btn { white-space: nowrap; flex-shrink: 0; }
+.mobile-mode .lib-right { flex-direction: column; gap: 8px; }
+.mobile-mode .lib-right input,
+.mobile-mode .lib-right select { width: 100%; }
+
+/* Rabbit Hole search full width */
+.mobile-mode .rabbit-search { max-width: 100%; }
+
+/* NL Search */
+.mobile-mode .nls-examples { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+.mobile-mode .nls-example { white-space: nowrap; flex-shrink: 0; }
+
+/* Quick Search */
+.mobile-mode .qs-overlay { padding: 8vh 12px 20px; }
+.mobile-mode .qs-modal { border-radius: 16px; }
+
+/* Pagination compact */
+.mobile-mode .page-controls { flex-direction: column; gap: 6px; align-items: flex-start; }
+.mobile-mode .pagination { flex-wrap: wrap; }
