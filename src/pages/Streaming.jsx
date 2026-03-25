@@ -43,40 +43,43 @@ export default function StreamingFilter() {
     try {
       const sourceIds = selected.join(',')
       const res = await fetch(
-        `https://api.watchmode.com/v1/list-titles/?apiKey=${WATCHMODE_KEY}&source_ids=${sourceIds}&types=movie&sort_by=popularity_desc&page=${p}&limit=20`
+        `https://api.watchmode.com/v1/list-titles/?apiKey=${WATCHMODE_KEY}&source_ids=${sourceIds}&types=movie&sort_by=popularity_desc&page=${p}&limit=40`
       )
 
-      if (!res.ok) {
-        throw new Error(`Watchmode API error: ${res.status}`)
-      }
+      if (!res.ok) throw new Error(`Watchmode API error: ${res.status}`)
 
       const data = await res.json()
       const titles = data.titles || []
       setTotalPages(Math.min(data.total_pages || 1, 10))
 
-      const enriched = await Promise.all(
-        titles.slice(0, 16).map(async (t) => {
-          try {
-            const tmdbRes = await fetch(
-              `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(t.title)}&year=${t.year}`
-            )
-            const tmdbData = await tmdbRes.json()
-            const match = (tmdbData.results || [])[0]
-            return {
-              id: t.id,
-              title: t.title,
-              year: t.year,
-              imdb_id: t.imdb_id,
-              tmdb_id: match?.id || t.tmdb_id,
-              poster_path: match?.poster_path || null,
-              vote_average: match?.vote_average || null,
-              overview: match?.overview || '',
+      // Enrich with TMDB posters — batch 4 at a time
+      const enriched = []
+      for (let i = 0; i < titles.length; i += 4) {
+        const batch = titles.slice(i, i + 4)
+        const results = await Promise.all(
+          batch.map(async (t) => {
+            try {
+              const tmdbRes = await fetch(
+                `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(t.title)}&year=${t.year}`
+              )
+              const tmdbData = await tmdbRes.json()
+              const match = (tmdbData.results || [])[0]
+              return {
+                id: t.id,
+                title: t.title,
+                year: t.year,
+                tmdb_id: match?.id || t.tmdb_id,
+                poster_path: match?.poster_path || null,
+                vote_average: match?.vote_average || null,
+              }
+            } catch {
+              return { id: t.id, title: t.title, year: t.year, poster_path: null }
             }
-          } catch {
-            return { id: t.id, title: t.title, year: t.year, poster_path: null }
-          }
-        })
-      )
+          })
+        )
+        enriched.push(...results)
+        if (i + 4 < titles.length) await new Promise(r => setTimeout(r, 250))
+      }
 
       setFilms(enriched)
     } catch (e) {
@@ -126,31 +129,25 @@ export default function StreamingFilter() {
         <>
           <div className="sf-results-header">
             <span className="sf-results-count mono">
-              Available on {activeNames.join(', ')}
+              {films.length} films on {activeNames.join(', ')}
             </span>
           </div>
           <div className="sf-grid">
             {films.map(f => (
-              <div key={f.id} className="vibe-film">
-                <div className="vibe-film-poster">
+              <div key={f.id} className="sf-film">
+                <div className="sf-film-poster">
                   {f.poster_path ? (
                     <img src={`${IMG_THUMB}${f.poster_path}`} alt={f.title} loading="lazy" />
                   ) : (
-                    <div style={{
-                      width: '100%', height: '100%', background: 'var(--bg3)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 28, fontWeight: 800, color: 'var(--text4)'
-                    }}>
-                      {f.title?.charAt(0)}
-                    </div>
+                    <div className="sf-film-no-poster">{f.title?.charAt(0)}</div>
                   )}
                   {f.vote_average > 0 && (
-                    <div className="vibe-film-score mono">{f.vote_average.toFixed(1)}</div>
+                    <div className="sf-film-score mono">{f.vote_average.toFixed(1)}</div>
                   )}
                 </div>
-                <div className="vibe-film-info">
-                  <div className="vibe-film-title">{f.title}</div>
-                  <div className="vibe-film-year mono">{f.year}</div>
+                <div className="sf-film-info">
+                  <div className="sf-film-title">{f.title}</div>
+                  <div className="sf-film-year mono">{f.year}</div>
                 </div>
               </div>
             ))}
@@ -158,23 +155,9 @@ export default function StreamingFilter() {
 
           {totalPages > 1 && (
             <div className="sf-pagination">
-              <button
-                className="btn-secondary"
-                onClick={() => search(page - 1)}
-                disabled={page <= 1}
-              >
-                ← Prev
-              </button>
-              <span className="mono" style={{ color: 'var(--text4)', fontSize: 12 }}>
-                Page {page}/{totalPages}
-              </span>
-              <button
-                className="btn-secondary"
-                onClick={() => search(page + 1)}
-                disabled={page >= totalPages}
-              >
-                Next →
-              </button>
+              <button className="btn-secondary" onClick={() => search(page - 1)} disabled={page <= 1}>← Prev</button>
+              <span className="mono" style={{ color: 'var(--text4)', fontSize: 12 }}>Page {page}/{totalPages}</span>
+              <button className="btn-secondary" onClick={() => search(page + 1)} disabled={page >= totalPages}>Next →</button>
             </div>
           )}
         </>
