@@ -23,6 +23,7 @@ import TonightsPick from './pages/TonightsPick'
 import TwoPlayer from './pages/TwoPlayer'
 import TimeBudget from './pages/TimeBudget'
 import Franchise from './pages/Franchise'
+import Streaming from './pages/Streaming'
 import ActorHeatmap from './pages/ActorHeatmap'
 import ImportExport from './pages/ImportExport'
 import ComingSoon from './pages/ComingSoon'
@@ -94,6 +95,7 @@ export default function App() {
       <Route path="/stats"           element={<Stats />} />
       <Route path="/heatmap"         element={<ActorHeatmap />} />
       <Route path="/franchise"       element={<Franchise />} />
+      <Route path="/streaming"       element={<Streaming />} />
       <Route path="/import"          element={<ImportExport />} />
       <Route path="/watchparty"      element={<ComingSoon title="Watchparty" icon="⟳" />} />
     </Routes>
