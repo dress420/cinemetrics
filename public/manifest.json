@@ -1,0 +1,11 @@
+{
+  "name": "CineMetrics",
+  "short_name": "CineMetrics",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080a0d",
+  "theme_color": "#4d9fd6",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
