@@ -12,8 +12,24 @@ const STATUS_MAP = {
 export default function FilmCard({ film, onClick }) {
   const poster = film.poster_path ? `${IMG_THUMB}${film.poster_path}` : null
 
+  const handleClick = () => {
+    if (onClick) { onClick(film); return }
+    // Use global handler to open detail panel
+    if (window.__cinemetrics_openfilm) {
+      window.__cinemetrics_openfilm({
+        id: film.tmdb_id || film.id,
+        tmdb_id: film.tmdb_id || film.id,
+        title: film.title,
+        poster_path: film.poster_path,
+        backdrop_path: film.backdrop_path,
+        media_type: film.media_type || 'movie',
+        overview: film.overview,
+      })
+    }
+  }
+
   return (
-    <div className="film-card" onClick={() => onClick && onClick(film)}>
+    <div className="film-card" onClick={handleClick}>
       <div className="film-poster">
         {poster ? (
           <img src={poster} alt={film.title} loading="lazy" />
