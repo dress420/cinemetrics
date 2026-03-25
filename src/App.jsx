@@ -48,6 +48,12 @@ export default function App() {
 
   useEffect(() => { loadCount() }, [refreshKey])
 
+  // Global film click handler — any component can call this
+  useEffect(() => {
+    window.__cinemetrics_openfilm = (film) => setDetailFilm(film)
+    return () => { delete window.__cinemetrics_openfilm }
+  }, [])
+
   // Ctrl+K shortcut
   useEffect(() => {
     const handler = (e) => {
@@ -103,57 +109,24 @@ export default function App() {
 
   return (
     <div className={isMobile ? 'mobile-mode' : 'desktop-mode'} style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', height: '100vh', width: '100vw', overflow: 'hidden' }}>
-
-      {/* Desktop: sidebar */}
       {!isMobile && <Sidebar filmCount={filmCount} />}
+      {isMobile && <MobileHeader onSearch={() => setShowSearch(true)} onAdd={() => openAdd()} />}
 
-      {/* Mobile: top header */}
-      {isMobile && (
-        <MobileHeader
-          onSearch={() => setShowSearch(true)}
-          onAdd={() => openAdd()}
-        />
-      )}
-
-      {/* Main content */}
-      <div style={{
-        flex: 1,
-        overflow: 'hidden',
-        display: 'flex',
-        minWidth: 0,
-        paddingBottom: isMobile ? '64px' : 0,
-      }}>
+      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', minWidth: 0, paddingBottom: isMobile ? '64px' : 0 }}>
         {routes}
       </div>
 
-      {/* Mobile: bottom nav */}
       {isMobile && <MobileNav filmCount={filmCount} />}
-
-      {/* Toggle button */}
       <ViewModeToggle mode={viewMode} onToggle={toggleMode} />
 
-      {/* Overlays */}
       {showSearch && (
-        <QuickSearch
-          onClose={() => setShowSearch(false)}
-          onSelect={(film) => { setShowSearch(false); handleFilmClick(film) }}
-        />
+        <QuickSearch onClose={() => setShowSearch(false)} onSelect={(film) => { setShowSearch(false); handleFilmClick(film) }} />
       )}
-
       {detailFilm && (
-        <FilmDetailPanel
-          film={detailFilm}
-          onClose={() => setDetailFilm(null)}
-          onAdd={handleAddFromDetail}
-        />
+        <FilmDetailPanel film={detailFilm} onClose={() => setDetailFilm(null)} onAdd={handleAddFromDetail} />
       )}
-
       {showAdd && (
-        <AddFilmModal
-          onClose={() => { setShowAdd(false); setAddPreselect(null) }}
-          onAdded={handleAdded}
-          preselect={addPreselect}
-        />
+        <AddFilmModal onClose={() => { setShowAdd(false); setAddPreselect(null) }} onAdded={handleAdded} preselect={addPreselect} />
       )}
     </div>
   )
