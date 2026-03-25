@@ -3,20 +3,20 @@ import { discoverMovies, IMG_THUMB } from '../lib/tmdb'
 import './Vibes.css'
 
 const VIBES = [
-  { key: 'rainy',       emoji: '🌧️', label: 'Rainy Day',              genres: '18',       keywords: '818',     sort: 'vote_average.desc', voteGte: 200 },
-  { key: 'feelgood',    emoji: '☀️', label: 'Feel Good',              genres: '35,10751',  keywords: '',        sort: 'popularity.desc',   voteGte: 500 },
-  { key: 'mindblowing', emoji: '🤯', label: 'Mind-Blowing Ending',    genres: '53,9648',   keywords: '155008',  sort: 'vote_average.desc', voteGte: 300 },
-  { key: 'truestory',   emoji: '📖', label: 'Based on True Story',    genres: '18,36',     keywords: '818',     sort: 'popularity.desc',   voteGte: 200 },
-  { key: 'cantlook',    emoji: '😱', label: "Can't Look Away",        genres: '53,27',     keywords: '',        sort: 'vote_average.desc', voteGte: 500 },
-  { key: 'cry',         emoji: '😭', label: 'Cry Your Eyes Out',      genres: '18,10749',  keywords: '',        sort: 'vote_average.desc', voteGte: 500 },
-  { key: 'datenight',   emoji: '❤️', label: 'Date Night',             genres: '35,10749',  keywords: '',        sort: 'popularity.desc',   voteGte: 300 },
-  { key: 'alone3am',    emoji: '🌙', label: 'Watch Alone at 3am',     genres: '27,9648',   keywords: '',        sort: 'vote_average.desc', voteGte: 200 },
-  { key: 'underrated',  emoji: '💎', label: 'Underrated Masterpiece', genres: '18',        keywords: '',        sort: 'vote_average.desc', voteGte: 50,  voteLte: 500 },
-  { key: 'style',       emoji: '🎨', label: 'Style over Substance',   genres: '878,28',    keywords: '',        sort: 'popularity.desc',   voteGte: 200 },
-  { key: 'thinking',    emoji: '🧠', label: 'Thought-Provoking',      genres: '878,18',    keywords: '',        sort: 'vote_average.desc', voteGte: 500 },
-  { key: 'escapism',    emoji: '🚀', label: 'Pure Escapism',          genres: '12,14,28',  keywords: '',        sort: 'popularity.desc',   voteGte: 500 },
-  { key: 'disturbing',  emoji: '⚠️', label: 'Disturbing but Important', genres: '18,10752', keywords: '',      sort: 'vote_average.desc', voteGte: 300 },
-  { key: 'laugh',       emoji: '🤣', label: 'Laugh until you cry',    genres: '35',        keywords: '',        sort: 'popularity.desc',   voteGte: 1000 },
+  { key: 'rainy',       emoji: '🌧️', label: 'Rainy Day',              genres: '18',        sort: 'vote_average.desc', voteGte: 500 },
+  { key: 'feelgood',    emoji: '☀️', label: 'Feel Good',              genres: '35,10751',  sort: 'popularity.desc',   voteGte: 500 },
+  { key: 'mindblowing', emoji: '🤯', label: 'Mind-Blowing Ending',    genres: '53,9648',   sort: 'vote_average.desc', voteGte: 500 },
+  { key: 'truestory',   emoji: '📖', label: 'Based on True Story',    genres: '18,36',     sort: 'popularity.desc',   voteGte: 200 },
+  { key: 'cantlook',    emoji: '😱', label: "Can't Look Away",        genres: '53,27',     sort: 'vote_average.desc', voteGte: 500 },
+  { key: 'cry',         emoji: '😭', label: 'Cry Your Eyes Out',      genres: '18,10749',  sort: 'vote_average.desc', voteGte: 500 },
+  { key: 'datenight',   emoji: '❤️', label: 'Date Night',             genres: '35,10749',  sort: 'popularity.desc',   voteGte: 300 },
+  { key: 'alone3am',    emoji: '🌙', label: 'Watch Alone at 3am',     genres: '27,9648',   sort: 'vote_average.desc', voteGte: 200 },
+  { key: 'underrated',  emoji: '💎', label: 'Underrated Masterpiece', genres: '18',        sort: 'vote_average.desc', voteGte: 50,  voteLte: 500 },
+  { key: 'style',       emoji: '🎨', label: 'Style over Substance',   genres: '878,28',    sort: 'popularity.desc',   voteGte: 200 },
+  { key: 'thinking',    emoji: '🧠', label: 'Thought-Provoking',      genres: '878,18',    sort: 'vote_average.desc', voteGte: 500 },
+  { key: 'escapism',    emoji: '🚀', label: 'Pure Escapism',          genres: '12,14,28',  sort: 'popularity.desc',   voteGte: 500 },
+  { key: 'disturbing',  emoji: '⚠️', label: 'Disturbing but Important', genres: '18,10752', sort: 'vote_average.desc', voteGte: 300 },
+  { key: 'laugh',       emoji: '🤣', label: 'Laugh until you cry',    genres: '35',        sort: 'popularity.desc',   voteGte: 1000 },
 ]
 
 export default function Vibes() {
@@ -34,10 +34,9 @@ export default function Vibes() {
         'vote_count.gte': vibe.voteGte,
         'vote_average.gte': 6,
       }
-      if (vibe.keywords) params.with_keywords = vibe.keywords
       if (vibe.voteLte) params['vote_count.lte'] = vibe.voteLte
       const data = await discoverMovies(params)
-      setFilms((data.results || []).filter(r => r.poster_path).slice(0, 16))
+      setFilms((data.results || []).filter(r => r.poster_path).slice(0, 24))
     } catch { setFilms([]) }
     setLoading(false)
   }
@@ -72,19 +71,32 @@ export default function Vibes() {
           </div>
           <div className="vibes-films">
             {films.map(f => (
-              <div key={f.id} className="vibe-film">
-                <div className="vibe-film-poster">
+              <div key={f.id} className="sf-film">
+                <div className="sf-film-poster">
                   <img src={`${IMG_THUMB}${f.poster_path}`} alt={f.title} loading="lazy" />
-                  <div className="vibe-film-score mono">{f.vote_average?.toFixed(1)}</div>
+                  <div className="sf-film-score mono">{f.vote_average?.toFixed(1)}</div>
                 </div>
-                <div className="vibe-film-info">
-                  <div className="vibe-film-title">{f.title}</div>
-                  <div className="vibe-film-year mono">{f.release_date?.split('-')[0]}</div>
+                <div className="sf-film-info">
+                  <div className="sf-film-title">{f.title}</div>
+                  <div className="sf-film-year mono">{f.release_date?.split('-')[0]}</div>
                 </div>
               </div>
             ))}
           </div>
         </>
+      )}
+
+      {!loading && selected && films.length === 0 && (
+        <div style={{ textAlign: 'center', padding: 40, color: 'var(--text4)', fontFamily: 'var(--mono)', fontSize: 13 }}>
+          No films found for this vibe — try another one
+        </div>
+      )}
+
+      {!selected && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 20px', textAlign: 'center' }}>
+          <div style={{ fontSize: 48, opacity: .2, marginBottom: 16 }}>🎬</div>
+          <div style={{ fontSize: 14, color: 'var(--text4)', fontFamily: 'var(--mono)' }}>Select a vibe above</div>
+        </div>
       )}
     </div>
   )

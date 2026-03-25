@@ -22,4 +22,14 @@
 .tp2-ai-label { font-size: 10px; letter-spacing: .16em; color: var(--accent); margin-bottom: 10px; }
 .tp2-ai-title { font-size: 28px; font-weight: 900; color: var(--text); letter-spacing: -.02em; }
 .tp2-ai-reason { font-size: 15px; color: var(--text2); margin-top: 10px; line-height: 1.6; font-weight: 300; }
-.tp2-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 14px; }
+.tp2-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.mobile-mode .tp2-genre-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.mobile-mode .tp2-genre { padding: 10px; font-size: 12px; }
+.mobile-mode .tp2-ai-pick { padding: 20px; }
+.mobile-mode .tp2-ai-title { font-size: 22px; }
+.mobile-mode .tp2-results { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }

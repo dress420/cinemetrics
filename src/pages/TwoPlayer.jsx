@@ -14,9 +14,9 @@ export default function TwoPlayer() {
   const [p1, setP1] = useState([])
   const [p2, setP2] = useState([])
   const [results, setResults] = useState([])
-  const [aiPick, setAiPick] = useState(null)
+  const [topPick, setTopPick] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [step, setStep] = useState(1) // 1=P1, 2=P2, 3=results
+  const [step, setStep] = useState(1)
 
   const toggle = (player, id) => {
     const [list, setList] = player === 1 ? [p1, setP1] : [p2, setP2]
@@ -38,42 +38,24 @@ export default function TwoPlayer() {
         'vote_count.gte': 300,
         'vote_average.gte': 6.5,
       })
-      const films = (data.results || []).filter(r => r.poster_path).slice(0, 12)
+      const films = (data.results || []).filter(r => r.poster_path).slice(0, 20)
       setResults(films)
 
-      // Ask Claude for the best compromise
       if (films.length > 0) {
+        const best = films[0]
+        const overlapNames = overlap.map(id => GENRES.find(g => g.id === id)?.name).filter(Boolean)
         const p1Names = p1.map(id => GENRES.find(g => g.id === id)?.name).filter(Boolean)
         const p2Names = p2.map(id => GENRES.find(g => g.id === id)?.name).filter(Boolean)
-        const filmList = films.slice(0, 6).map(f => `${f.title} (${f.release_date?.split('-')[0]}, ⭐${f.vote_average?.toFixed(1)})`).join(', ')
-
-        const res = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514',
-            max_tokens: 500,
-            messages: [{
-              role: 'user',
-              content: `Player 1 likes: ${p1Names.join(', ')}. Player 2 likes: ${p2Names.join(', ')}.
-From these films: ${filmList}
-Pick the BEST compromise film both will enjoy.
-Return ONLY JSON: { "title": "...", "reason": "one-sentence why this works for both" }`
-            }],
-          }),
-        })
-        const aiData = await res.json()
-        const text = aiData.content?.map(c => c.text || '').join('') || ''
-        const clean = text.replace(/```json|```/g, '').trim()
-        setAiPick(JSON.parse(clean))
+        const reason = overlapNames.length > 0
+          ? `You both love ${overlapNames.join(' & ')} — this is the highest-rated pick.`
+          : `Combining ${p1Names[0]} and ${p2Names[0]} tastes — this bridges both worlds.`
+        setTopPick({ title: best.title, year: best.release_date?.split('-')[0], score: best.vote_average?.toFixed(1), reason })
       }
     } catch { setResults([]) }
     setLoading(false)
   }
 
-  const reset = () => { setP1([]); setP2([]); setResults([]); setAiPick(null); setStep(1) }
-
-  const currentPlayer = step === 1 ? 1 : 2
+  const reset = () => { setP1([]); setP2([]); setResults([]); setTopPick(null); setStep(1) }
   const currentList = step === 1 ? p1 : p2
 
   return (
@@ -90,60 +72,44 @@ Return ONLY JSON: { "title": "...", "reason": "one-sentence why this works for b
         <>
           <div className="tp2-player-label">
             <span className={`tp2-dot ${step === 1 ? 'p1' : 'p2'}`} />
-            Player {currentPlayer} — pick up to 3 genres
-            <span className="mono" style={{ marginLeft: 'auto', color: 'var(--text4)' }}>
-              {currentList.length}/3
-            </span>
+            Player {step === 1 ? 1 : 2} — pick up to 3 genres
+            <span className="mono" style={{ marginLeft: 'auto', color: 'var(--text4)' }}>{currentList.length}/3</span>
           </div>
           <div className="tp2-genre-grid">
             {GENRES.map(g => (
-              <button
-                key={g.id}
-                className={`tp2-genre${currentList.includes(g.id) ? ' active' : ''}`}
-                onClick={() => toggle(currentPlayer, g.id)}
-              >
+              <button key={g.id} className={`tp2-genre${currentList.includes(g.id) ? ' active' : ''}`} onClick={() => toggle(step === 1 ? 1 : 2, g.id)}>
                 {g.name}
               </button>
             ))}
           </div>
           <div className="tp2-actions">
-            {step === 1 && (
-              <button className="btn-primary" onClick={() => setStep(2)} disabled={p1.length === 0}>
-                Player 2's Turn →
-              </button>
-            )}
-            {step === 2 && (
-              <button className="btn-primary" onClick={findFilms} disabled={p2.length === 0}>
-                Find Our Film →
-              </button>
-            )}
+            {step === 1 && <button className="btn-primary" onClick={() => setStep(2)} disabled={p1.length === 0}>Player 2's Turn →</button>}
+            {step === 2 && <button className="btn-primary" onClick={findFilms} disabled={p2.length === 0}>Find Our Film →</button>}
           </div>
         </>
       )}
 
-      {step === 3 && loading && (
-        <div className="tp2-loading mono">Finding the perfect compromise...</div>
-      )}
+      {step === 3 && loading && <div className="tp2-loading mono">Finding the perfect compromise...</div>}
 
       {step === 3 && !loading && (
         <>
-          {aiPick && (
+          {topPick && (
             <div className="tp2-ai-pick">
-              <div className="tp2-ai-label mono">AI'S TOP PICK FOR BOTH</div>
-              <div className="tp2-ai-title">{aiPick.title}</div>
-              <div className="tp2-ai-reason">{aiPick.reason}</div>
+              <div className="tp2-ai-label mono">TOP PICK FOR BOTH</div>
+              <div className="tp2-ai-title">{topPick.title} <span style={{ color: 'var(--text4)', fontSize: 18, fontWeight: 400 }}>({topPick.year}) ⭐ {topPick.score}</span></div>
+              <div className="tp2-ai-reason">{topPick.reason}</div>
             </div>
           )}
           <div className="tp2-results">
             {results.map(f => (
-              <div key={f.id} className="vibe-film">
-                <div className="vibe-film-poster">
+              <div key={f.id} className="sf-film">
+                <div className="sf-film-poster">
                   <img src={`${IMG_THUMB}${f.poster_path}`} alt={f.title} loading="lazy" />
-                  <div className="vibe-film-score mono">{f.vote_average?.toFixed(1)}</div>
+                  <div className="sf-film-score mono">{f.vote_average?.toFixed(1)}</div>
                 </div>
-                <div className="vibe-film-info">
-                  <div className="vibe-film-title">{f.title}</div>
-                  <div className="vibe-film-year mono">{f.release_date?.split('-')[0]}</div>
+                <div className="sf-film-info">
+                  <div className="sf-film-title">{f.title}</div>
+                  <div className="sf-film-year mono">{f.release_date?.split('-')[0]}</div>
                 </div>
               </div>
             ))}
