@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CineMetrics — Offline</title>
+  <style>
+    body { background: #080a0d; color: #e8f0f8; font-family: 'Outfit', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; text-align: center; padding: 20px; }
+    .wrap { max-width: 320px; }
+    .icon { font-size: 64px; margin-bottom: 24px; opacity: .3; }
+    h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: #e8f0f8; }
+    p { font-size: 14px; color: #4d6478; line-height: 1.6; margin-bottom: 24px; }
+    button { background: #4d9fd6; color: #fff; border: none; padding: 12px 32px; border-radius: 10px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="icon">◈</div>
+    <h1>You're offline</h1>
+    <p>CineMetrics needs an internet connection to load film data. Check your connection and try again.</p>
+    <button onclick="location.reload()">Retry</button>
+  </div>
+</body>
+</html>
