@@ -1,30 +1,33 @@
 .vmt-btn {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 900;
-  width: 44px;
-  height: 44px;
+  z-index: 810;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: var(--bg3);
-  border: 1px solid var(--border2);
-  font-size: 20px;
+  background: rgba(255,255,255,.06);
+  border: 0.5px solid rgba(255,255,255,.1);
+  color: rgba(255,255,255,.35);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, .4);
-  transition: all .2s;
   -webkit-tap-highlight-color: transparent;
+  transition: all .2s;
 }
 
-.vmt-btn:hover {
-  background: var(--bg4);
-  border-color: var(--accent);
-  transform: scale(1.08);
+.vmt-btn:active {
+  transform: scale(0.92);
 }
 
-/* In mobile mode, move the toggle above the bottom nav */
+.desktop-mode .vmt-btn {
+  bottom: 20px;
+  right: 20px;
+}
+
 .mobile-mode .vmt-btn {
-  bottom: 80px;
+  bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  opacity: .5;
 }

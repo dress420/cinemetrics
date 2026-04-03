@@ -5,19 +5,19 @@
 }
 .fdp-panel {
   width: 480px; max-width: 100%; height: 100vh;
-  background: var(--bg); border-left: 1px solid var(--border);
+  background: var(--bg); border-left: 0.5px solid var(--border);
   overflow-y: auto; position: relative;
-  animation: slideIn .25s ease;
+  animation: fdpSlideIn .25s ease;
 }
-@keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes fdpSlideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
 .fdp-close {
   position: fixed; top: 16px; right: 492px; z-index: 910;
   background: var(--bg2); color: var(--text2);
-  border: 1px solid var(--border); border-radius: 50%;
+  border: 0.5px solid var(--border); border-radius: 50%;
   width: 36px; height: 36px; font-size: 14px;
   display: flex; align-items: center; justify-content: center;
-  transition: all .15s;
+  transition: all .15s; cursor: pointer;
 }
 .fdp-close:hover { background: var(--bg3); color: var(--text); }
 
@@ -34,16 +34,16 @@
 .fdp-poster { width: 100px; height: 150px; border-radius: var(--radius-md); object-fit: cover; flex-shrink: 0; border: 2px solid var(--border); }
 .fdp-header { flex: 1; min-width: 0; }
 .fdp-title { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -.02em; line-height: 1.2; }
-.fdp-meta { font-size: 12px; color: var(--text3); margin-top: 6px; }
+.fdp-meta { font-size: 12px; color: var(--text3); margin-top: 6px; font-family: var(--mono); }
 .fdp-genres { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
 
 .fdp-section { margin-bottom: 22px; }
-.fdp-section-title { font-size: 9px; letter-spacing: .14em; color: var(--text4); margin-bottom: 10px; text-transform: uppercase; }
+.fdp-section-title { font-size: 9px; letter-spacing: .14em; color: var(--text4); margin-bottom: 10px; text-transform: uppercase; font-family: var(--mono); }
 
 .fdp-scores { display: flex; gap: 10px; }
 .fdp-score-card {
   flex: 1; text-align: center; padding: 14px 8px;
-  background: var(--bg2); border: 1px solid var(--border);
+  background: var(--bg2); border: 0.5px solid var(--border);
   border-radius: var(--radius-md);
 }
 .fdp-score-card.high { border-color: rgba(77,229,160,.2); }
@@ -59,7 +59,7 @@
 .fdp-director { font-size: 15px; color: var(--text); font-weight: 600; }
 .fdp-awards { font-size: 13px; color: var(--yellow); font-family: var(--mono); }
 
-.fdp-cast { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; }
+.fdp-cast { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
 .fdp-cast-item { text-align: center; flex-shrink: 0; width: 64px; }
 .fdp-cast-img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; }
 .fdp-cast-placeholder {
@@ -68,18 +68,43 @@
   font-weight: 800; color: var(--text4); margin: 0 auto;
 }
 .fdp-cast-name { font-size: 10px; color: var(--text2); margin-top: 6px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.fdp-cast-char { font-size: 9px; color: var(--text4); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fdp-cast-char { font-size: 9px; color: var(--text4); margin-top: 2px; font-family: var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .fdp-similar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .fdp-similar-card { cursor: pointer; }
-.fdp-similar-card img { width: 100%; height: 180px; object-fit: cover; border-radius: var(--radius-md); border: 1px solid var(--border); }
+.fdp-similar-card img { width: 100%; height: 180px; object-fit: cover; border-radius: var(--radius-md); border: 0.5px solid var(--border); }
 .fdp-similar-title { font-size: 11px; color: var(--text2); margin-top: 6px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .fdp-actions { margin-top: 24px; }
 .fdp-add-btn { width: 100%; padding: 14px; font-size: 15px; }
-.fdp-in-lib { text-align: center; padding: 14px; color: var(--green); font-size: 13px; background: rgba(77,229,160,.08); border-radius: var(--radius-md); }
+.fdp-in-lib { text-align: center; padding: 14px; color: var(--green); font-size: 13px; background: rgba(77,229,160,.06); border-radius: var(--radius-md); font-family: var(--mono); }
 
-@media (max-width: 600px) {
-  .fdp-panel { width: 100%; }
-  .fdp-close { right: 16px; top: 16px; position: absolute; }
+/* MOBILE: slide up from bottom, full screen */
+.mobile-mode .fdp-overlay {
+  align-items: flex-end;
+  justify-content: center;
 }
+.mobile-mode .fdp-panel {
+  width: 100%;
+  height: 95vh;
+  border-left: none;
+  border-top: 0.5px solid var(--border);
+  border-radius: 20px 20px 0 0;
+  animation: fdpSlideUp .3s cubic-bezier(.16, 1, .3, 1);
+}
+@keyframes fdpSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.mobile-mode .fdp-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  left: auto;
+}
+.mobile-mode .fdp-top { flex-direction: column; gap: 12px; }
+.mobile-mode .fdp-poster { width: 80px; height: 120px; }
+.mobile-mode .fdp-title { font-size: 20px; }
+.mobile-mode .fdp-scores { flex-wrap: wrap; }
+.mobile-mode .fdp-score-card { min-width: 70px; }
+.mobile-mode .fdp-similar { grid-template-columns: repeat(2, 1fr); }
+.mobile-mode .fdp-content { padding: 0 20px 40px; }
+.mobile-mode .fdp-backdrop { height: 200px; }
