@@ -32,7 +32,10 @@ import { supabase } from './lib/supabase'
 function getInitialMode() {
   const saved = localStorage.getItem('cinemetrics-viewmode')
   if (saved === 'mobile' || saved === 'desktop') return saved
-  return window.innerWidth <= 768 ? 'mobile' : 'desktop'
+  // Auto-detect: touch device or narrow screen = mobile
+  const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+  const isNarrow = window.innerWidth <= 768
+  return (isTouch && isNarrow) ? 'mobile' : 'desktop'
 }
 
 export default function App() {
@@ -48,13 +51,13 @@ export default function App() {
 
   useEffect(() => { loadCount() }, [refreshKey])
 
-  // Global film click handler — any component can call this
+  // Global film click handler
   useEffect(() => {
     window.__cinemetrics_openfilm = (film) => setDetailFilm(film)
     return () => { delete window.__cinemetrics_openfilm }
   }, [])
 
-  // Ctrl+K shortcut
+  // Ctrl+K shortcut (desktop)
   useEffect(() => {
     const handler = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -64,6 +67,12 @@ export default function App() {
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
+  }, [])
+
+  // Prevent overscroll bounce on iOS PWA
+  useEffect(() => {
+    document.body.style.overscrollBehavior = 'none'
+    return () => { document.body.style.overscrollBehavior = '' }
   }, [])
 
   const loadCount = async () => {
@@ -107,12 +116,23 @@ export default function App() {
     </Routes>
   )
 
+  const bottomPad = isMobile ? 'calc(60px + env(safe-area-inset-bottom, 0px))' : '0px'
+
   return (
-    <div className={isMobile ? 'mobile-mode' : 'desktop-mode'} style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', height: '100vh', width: '100vw', overflow: 'hidden' }}>
+    <div
+      className={isMobile ? 'mobile-mode' : 'desktop-mode'}
+      style={{
+        display: 'flex',
+        flexDirection: isMobile ? 'column' : 'row',
+        height: '100vh',
+        width: '100vw',
+        overflow: 'hidden',
+      }}
+    >
       {!isMobile && <Sidebar filmCount={filmCount} />}
       {isMobile && <MobileHeader onSearch={() => setShowSearch(true)} onAdd={() => openAdd()} />}
 
-      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', minWidth: 0, paddingBottom: isMobile ? '64px' : 0 }}>
+      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', minWidth: 0, paddingBottom: isMobile ? bottomPad : 0 }}>
         {routes}
       </div>
 
