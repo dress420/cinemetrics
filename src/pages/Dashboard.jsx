@@ -1,13 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
-import { Search, Plus, ChevronLeft, ChevronRight, ArrowRight, Star, Film } from 'lucide-react'
+import { Search, Plus, ChevronLeft, ChevronRight, ArrowRight, Star, Film, AlertTriangle } from 'lucide-react'
 import { IMG_THUMB } from '../lib/tmdb'
 import { useRatings } from '../hooks/useRatings'
-import RatingsBoard from '../components/RatingsBoard'
+import { fetchList, isRankedSource, RUNTIME_FILTERS, PAGE_SIZE } from '../lib/rankings'
+import { formatValue, normalize, tone } from '../lib/ratings'
+import RatingsBoard, { ProviderMark } from '../components/RatingsBoard'
 import './Dashboard.css'
-
-const API_KEY = import.meta.env.VITE_TMDB_API_KEY
-const BASE    = 'https://api.themoviedb.org/3'
-const MAX_PAGES = 50
 
 const SOURCES = [
   { key: 'tmdb',         label: 'TMDB',            color: '#01b4e4' },
@@ -25,112 +23,6 @@ const TIME_FILTERS = [
   { key: 'year',    label: 'This Year'  },
   { key: 'alltime', label: 'All Time'   },
 ]
-
-const RUNTIME_FILTERS = [
-  { key: 'any',    label: 'Any length',  lte: null, gte: null },
-  { key: 'short',  label: 'Under 90 min', lte: 90,  gte: null },
-  { key: 'medium', label: '90–120 min',  lte: 120,  gte: 90 },
-  { key: 'epic',   label: '2h+',         lte: null, gte: 120 },
-]
-
-// Mindest-Stimmen pro Quelle & Zeitraum. Jede Stufe wird nur probiert,
-// wenn die vorherige zu wenig Treffer liefert — so ist keine Liste mehr leer.
-const VOTE_STEPS = {
-  tmdb:         { month: [10, 0],        year: [50, 10],       alltime: [1000] },
-  imdb:         { month: [100, 30, 10],  year: [500, 150, 40], alltime: [10000, 3000] },
-  rottentomato: { month: [10, 0],        year: [50, 10],       alltime: [2000, 500] },
-  metacritic:   { month: [40, 15, 5],    year: [200, 60, 20],  alltime: [1500, 500] },
-  letterboxd:   { month: [20, 8, 3],     year: [80, 25, 8],    alltime: [300, 100] },
-}
-const SORT_BY = {
-  tmdb: 'popularity.desc', imdb: 'vote_average.desc', rottentomato: 'popularity.desc',
-  metacritic: 'vote_average.desc', letterboxd: 'vote_average.desc',
-}
-
-const iso = (d) => {
-  const z = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
-  return z.toISOString().slice(0, 10)
-}
-const daysAgo = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return iso(d) }
-
-function dateWindow(time, widen = false) {
-  const today = iso(new Date())
-  if (time === 'month') return { gte: daysAgo(widen ? 90 : 30), lte: today }
-  if (time === 'year')  return { gte: widen ? daysAgo(365) : `${new Date().getFullYear()}-01-01`, lte: today }
-  return null
-}
-
-const url = (path, params) =>
-  `${BASE}${path}?${new URLSearchParams({ api_key: API_KEY, language: 'en-US', ...params })}`
-
-const getJSON = async (u) => {
-  const res = await fetch(u)
-  if (!res.ok) throw new Error(`TMDB ${res.status}`)
-  return res.json()
-}
-
-const clean = (results, fallbackType) =>
-  (results || [])
-    .filter(r => r.poster_path && r.media_type !== 'person')
-    .map(r => ({ ...r, media_type: r.media_type || fallbackType }))
-
-// IMDb-Formel (gewichtete Bewertung) — verhindert, dass Filme mit 12 Stimmen ganz oben landen
-const weighted = (r, m = 250, C = 6.6) => {
-  const v = r.vote_count || 0
-  return (v / (v + m)) * (r.vote_average || 0) + (m / (v + m)) * C
-}
-
-async function fetchTrending({ source, time, page, runtime }) {
-  // Kinos: aktuelle Filme in Deutschland
-  if (source === 'nowplaying') {
-    const d = await getJSON(url('/movie/now_playing', { page, region: 'DE' }))
-    return { items: clean(d.results, 'movie'), totalPages: d.total_pages }
-  }
-
-  // Heute / diese Woche: was gerade trendet, je nach Quelle anders sortiert
-  if (time === 'day' || time === 'week') {
-    if (source === 'tmdb') {
-      const d = await getJSON(url(`/trending/all/${time}`, { page }))
-      return { items: clean(d.results), totalPages: d.total_pages }
-    }
-    const d = await getJSON(url(`/trending/movie/${time}`, { page }))
-    let items = clean(d.results, 'movie')
-    if (source === 'imdb')       items.sort((a, b) => weighted(b) - weighted(a))
-    if (source === 'metacritic') items.sort((a, b) => weighted(b, 60) - weighted(a, 60))
-    if (source === 'letterboxd') {
-      const en = items.filter(i => i.original_language === 'en')
-      items = (en.length >= 8 ? en : items).sort((a, b) => weighted(b, 120) - weighted(a, 120))
-    }
-    if (items.length) return { items, totalPages: d.total_pages }
-    // falls die Trendliste leer ist, unten mit "Diesen Monat" weitermachen
-    time = 'month'
-  }
-
-  // Monat / Jahr / Allzeit: TMDB Discover mit gestaffelter Lockerung
-  const rt = RUNTIME_FILTERS.find(r => r.key === runtime) || RUNTIME_FILTERS[0]
-  const steps = VOTE_STEPS[source]?.[time] || [0]
-  const windows = time === 'alltime' ? [null] : [dateWindow(time), dateWindow(time, true)]
-  let last = { items: [], totalPages: 1 }
-
-  for (const win of windows) {
-    for (const minVotes of steps) {
-      const params = {
-        page,
-        sort_by: source === 'tmdb' && time === 'alltime' ? 'vote_count.desc' : SORT_BY[source],
-        include_adult: 'false',
-        'vote_count.gte': minVotes,
-      }
-      if (win) { params['primary_release_date.gte'] = win.gte; params['primary_release_date.lte'] = win.lte }
-      if (rt.lte) params['with_runtime.lte'] = rt.lte
-      if (rt.gte) params['with_runtime.gte'] = rt.gte
-      if (source === 'letterboxd') params.with_original_language = 'en'
-      const d = await getJSON(url('/discover/movie', params))
-      last = { items: clean(d.results, 'movie'), totalPages: d.total_pages }
-      if (last.items.length >= 8 || page > 1) return last
-    }
-  }
-  return last
-}
 
 function greeting() {
   const h = new Date().getHours()
@@ -150,6 +42,7 @@ export default function Dashboard({ onAddFilm, onSearch, onFilmClick, isMobile }
   const [totalPages,    setTotalPages]    = useState(1)
   const [loading,       setLoading]       = useState(true)
   const [error,         setError]         = useState('')
+  const [meta,          setMeta]          = useState({ label: '', provider: null, degraded: null })
   const fetchId = useRef(0)
   const listRef = useRef(null)
   // Ratings aller Anbieter für den Film im Hero (kurz verzögert beim schnellen Durchklicken)
@@ -159,12 +52,13 @@ export default function Dashboard({ onAddFilm, onSearch, onFilmClick, isMobile }
     const id = ++fetchId.current
     setLoading(true)
     setError('')
-    fetchTrending({ source, time: timeFilter, page, runtime: runtimeFilter })
-      .then(({ items, totalPages }) => {
+    fetchList({ source, time: timeFilter, page, runtime: runtimeFilter })
+      .then(({ items, totalPages, label, provider, degraded }) => {
         if (id !== fetchId.current) return
         setItems(items)
         setFeatured(items[0] || null)
-        setTotalPages(Math.max(1, Math.min(totalPages || 1, MAX_PAGES)))
+        setTotalPages(totalPages)
+        setMeta({ label, provider, degraded })
         setLoading(false)
         listRef.current?.scrollTo(0, 0)
       })
@@ -181,7 +75,7 @@ export default function Dashboard({ onAddFilm, onSearch, onFilmClick, isMobile }
   const goToPage      = (p) => { if (p >= 1 && p <= totalPages && p !== page) setPage(p) }
 
   const src = SOURCES.find(s => s.key === source)
-  const rank = (i) => (page - 1) * 20 + i + 1
+  const rank = (i) => (page - 1) * PAGE_SIZE + i + 1
   const showTime = source !== 'nowplaying'
   const showRuntime = source !== 'nowplaying' && !['day', 'week'].includes(timeFilter)
 
@@ -290,6 +184,14 @@ export default function Dashboard({ onAddFilm, onSearch, onFilmClick, isMobile }
           </div>
         </div>
 
+        {source !== 'nowplaying' && (
+          <div className={`trend-caption${!loading && meta.degraded ? ' is-warning' : ''}`} aria-live="polite">
+            {loading
+              ? (isRankedSource(source) ? `Fetching live ${src?.label} scores…` : 'Loading…')
+              : <>{meta.degraded && <AlertTriangle size={13} />}{meta.label}</>}
+          </div>
+        )}
+
         {loading ? (
           <div className="trend-body is-loading" aria-busy="true">
             <div className="trend-hero"><div className="trend-hero-media skeleton" /></div>
@@ -324,7 +226,7 @@ export default function Dashboard({ onAddFilm, onSearch, onFilmClick, isMobile }
               </div>
               <div className="trend-hero-info">
                 <div className="trend-hero-badge" style={{ color: src?.color }}>
-                  #{rank(featuredIndex)} on {src?.label}
+                  #{rank(featuredIndex)} on {meta.degraded ? 'TMDB' : src?.label}
                 </div>
                 <h3 className="trend-hero-title">{featured.title || featured.name}</h3>
                 <div className="trend-hero-meta">
@@ -355,8 +257,15 @@ export default function Dashboard({ onAddFilm, onSearch, onFilmClick, isMobile }
                       <span className="trend-row-info">
                         <span className="trend-row-title">{t.title || t.name}</span>
                         <span className="trend-row-meta">
-                          {t.vote_average > 0 && <><Star size={10} fill="currentColor" strokeWidth={0} /> {t.vote_average.toFixed(1)} · </>}
-                          {year(t)}{t.media_type === 'tv' ? ' · Series' : ''}
+                          {meta.provider ? (
+                            <span className={`trend-row-score rb-tone-${tone(normalize(meta.provider, t.score?.value))}`}>
+                              <ProviderMark provider={meta.provider} value={t.score?.value} size="xs" />
+                              <b>{formatValue(meta.provider, t.score?.value)}</b>
+                            </span>
+                          ) : t.vote_average > 0 && (
+                            <span className="trend-row-star"><Star size={10} fill="currentColor" strokeWidth={0} /> {t.vote_average.toFixed(1)}</span>
+                          )}
+                          <span>{[year(t), t.media_type === 'tv' ? 'Series' : null].filter(Boolean).join(' · ')}</span>
                         </span>
                       </span>
                     </button>

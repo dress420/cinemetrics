@@ -8,14 +8,17 @@ const readCache = (key) => {
   try {
     const raw = localStorage.getItem(CACHE_PREFIX + key)
     if (!raw) return null
-    const { t, v } = JSON.parse(raw)
-    if (Date.now() - t > CACHE_DAYS * 864e5) return null
+    const { t, v, d } = JSON.parse(raw)
+    if (Date.now() - t > (d || CACHE_DAYS) * 864e5) return null
     return v
   } catch { return null }
 }
-const writeCache = (key, v) => {
-  try { localStorage.setItem(CACHE_PREFIX + key, JSON.stringify({ t: Date.now(), v })) } catch {}
+const writeCache = (key, v, days) => {
+  try { localStorage.setItem(CACHE_PREFIX + key, JSON.stringify({ t: Date.now(), v, d: days })) } catch {}
 }
+
+// Ungültiger Key oder Tageslimit: ein paar Minuten lang nicht weiter anfragen (schont das Kontingent)
+let outage = null
 
 const num = (v) => (v && v !== 'N/A' ? parseFloat(String(v).replace(/,/g, '')) : null)
 
@@ -27,6 +30,7 @@ export async function getOMDBData({ imdbId, title, year, type } = {}) {
   const cacheKey = imdbId || `${title}|${year}|${type || ''}`
   const cached = readCache(cacheKey)
   if (cached) return cached
+  if (outage && Date.now() < outage.until) return { error: outage.error }
 
   const url = new URL('https://www.omdbapi.com/')
   url.searchParams.set('apikey', API_KEY)
@@ -47,7 +51,11 @@ export async function getOMDBData({ imdbId, title, year, type } = {}) {
       const msg = String(data.Error || res.status)
       const error = /api key/i.test(msg) ? 'invalid-key'
         : /limit/i.test(msg) ? 'limit'
+        : !data.Error ? 'network'
         : 'not-found'
+      if (error === 'invalid-key' || error === 'limit') outage = { error, until: Date.now() + 5 * 60e3 }
+      // Exakte ID ohne Treffer: einen Tag merken, statt bei jeder Rangliste neu zu fragen
+      else if (imdbId) writeCache(cacheKey, { error }, 1)
       return { error }
     }
     const rating = (src) => (data.Ratings || []).find(r => r.Source === src)?.Value

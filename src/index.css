@@ -289,9 +289,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .mobile-mode .film-meta { font-size: 9.5px; }
 .mobile-mode .film-info { padding: 8px 10px 10px; }
 
-.mobile-mode .mood-selector { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-.mobile-mode .mood-option { padding: 16px 12px; }
-
 .mobile-mode .stats-hero { flex-wrap: wrap; gap: 20px; padding: 24px; }
 .mobile-mode .hero-num { font-size: 36px; }
 .mobile-mode .hero-divider { display: none; }
@@ -324,12 +321,4 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .mobile-mode .lib-right input,
 .mobile-mode .lib-right select { width: 100%; }
 
-.mobile-mode .rabbit-search,
 .mobile-mode .fr-search { max-width: 100%; }
-.mobile-mode .rabbit-grid { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 10px; }
-.mobile-mode .rabbit-film-poster { height: auto; aspect-ratio: 2 / 3; }
-
-.mobile-mode .tp2-genre-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-.mobile-mode .tp2-genre { padding: 12px; font-size: 13px; }
-.mobile-mode .tp2-ai-pick { padding: 20px; }
-.mobile-mode .tp2-ai-title { font-size: 22px; }

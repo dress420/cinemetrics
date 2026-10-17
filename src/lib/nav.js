@@ -1,6 +1,6 @@
 import {
-  House, Library, Bookmark, Clock, Sparkles, Smile,
-  ThumbsUp, Gem, Rabbit, Users, Tv, ChartColumn, LayoutGrid, Layers,
+  House, Library, Bookmark, Clock, Sparkles,
+  ThumbsUp, Gem, Tv, ChartColumn, LayoutGrid, Layers,
   ArrowLeftRight,
 } from 'lucide-react'
 
@@ -19,11 +19,8 @@ export const NAV_GROUPS = [
     section: 'Discover',
     items: [
       { to: '/nl-search',       label: 'AI Search',       icon: Sparkles },
-      { to: '/mood',            label: 'Mood Engine',     icon: Smile },
       { to: '/recommendations', label: 'For You',         icon: ThumbsUp },
       { to: '/gems',            label: 'Hidden Gems',     icon: Gem },
-      { to: '/rabbit-hole',     label: 'Rabbit Hole',     icon: Rabbit },
-      { to: '/two-player',      label: 'Two-Player',      icon: Users },
       { to: '/streaming',       label: 'Streaming',       icon: Tv },
     ],
   },

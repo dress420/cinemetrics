@@ -11,12 +11,9 @@ import Library from './pages/Library'
 import Watchlist from './pages/Watchlist'
 import Watching from './pages/Watching'
 import Recommendations from './pages/Recommendations'
-import MoodEngine from './pages/MoodEngine'
 import HiddenGems from './pages/HiddenGems'
-import RabbitHole from './pages/RabbitHole'
 import Stats from './pages/Stats'
 import NLSearch from './pages/NLSearch'
-import TwoPlayer from './pages/TwoPlayer'
 import Franchise from './pages/Franchise'
 import Streaming from './pages/Streaming'
 import ActorHeatmap from './pages/ActorHeatmap'
@@ -116,18 +113,15 @@ export default function App() {
           <Route path="/watchlist"       element={<Watchlist onAddFilm={() => openAdd()} />} />
           <Route path="/watching"        element={<Watching  onAddFilm={() => openAdd()} />} />
           <Route path="/recommendations" element={<Recommendations />} />
-          <Route path="/mood"            element={<MoodEngine />} />
           <Route path="/gems"            element={<HiddenGems />} />
-          <Route path="/rabbit-hole"     element={<RabbitHole />} />
           <Route path="/nl-search"       element={<NLSearch />} />
-          <Route path="/two-player"      element={<TwoPlayer />} />
           <Route path="/stats"           element={<Stats />} />
           <Route path="/heatmap"         element={<ActorHeatmap />} />
           <Route path="/franchise"       element={<Franchise />} />
           <Route path="/streaming"       element={<Streaming />} />
           <Route path="/import"          element={<ImportExport />} />
           {/* entfernte Seiten → Startseite (z. B. alte Lesezeichen) */}
-          {['/vibes', '/tonights-pick', '/time-budget', '/dna', '/watchparty'].map(p => (
+          {['/vibes', '/tonights-pick', '/time-budget', '/dna', '/watchparty', '/mood', '/rabbit-hole', '/two-player'].map(p => (
             <Route key={p} path={p} element={<Navigate to="/" replace />} />
           ))}
           <Route path="*"                element={<ComingSoon title="Page not found" />} />
