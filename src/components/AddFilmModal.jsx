@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { X, Plus } from 'lucide-react'
 import { searchMulti, getMovie, getTVShow, IMG_THUMB } from '../lib/tmdb'
 import { supabase } from '../lib/supabase'
 import './AddFilmModal.css'
@@ -114,7 +115,7 @@ export default function AddFilmModal({ onClose, onAdded, preselect }) {
       <div className="modal">
         <div className="modal-header">
           <div className="badge">ADD FILM / SERIES</div>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <button className="modal-close" onClick={onClose} aria-label="Close"><X size={16} /></button>
         </div>
 
         {!preselect && (
@@ -197,7 +198,7 @@ export default function AddFilmModal({ onClose, onAdded, preselect }) {
 
             {error && <div style={{ color: 'var(--red)', fontSize: 12, marginTop: 10, fontFamily: 'var(--mono)' }}>{error}</div>}
             <button className="btn-primary save-btn" onClick={handleSave} disabled={saving}>
-              {saving ? 'Saving...' : '+ Add to CineMetrics'}
+              {saving ? 'Saving…' : <><Plus size={17} strokeWidth={2.5} /> Add to CineMetrics</>}
             </button>
           </div>
         )}

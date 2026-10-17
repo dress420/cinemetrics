@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Gem } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { IMG_THUMB } from '../lib/tmdb'
 import './HiddenGems.css'
@@ -33,10 +34,10 @@ export default function HiddenGems() {
       {loading ? (
         <div className="gems-loading">Scanning your vault...</div>
       ) : gems.length === 0 ? (
-        <div className="gems-empty">
-          <div style={{ fontSize: 48, marginBottom: 16, opacity: .4 }}>💎</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text3)' }}>No gems yet</div>
-          <div style={{ fontSize: 14, color: 'var(--text4)', marginTop: 8, fontFamily: 'var(--mono)' }}>Rate films to discover your hidden gems</div>
+        <div className="empty-state">
+          <div className="empty-state-icon"><Gem size={24} strokeWidth={1.6} /></div>
+          <div className="empty-state-title">No gems yet</div>
+          <div className="empty-state-sub">Rate films to discover your hidden gems</div>
         </div>
       ) : (
         <div className="gems-list">

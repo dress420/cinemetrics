@@ -4,25 +4,24 @@
   cursor: pointer; transition: border-color .2s, transform .2s, box-shadow .2s;
 }
 .mc:hover { border-color: var(--border2); transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,.4); }
-.mc-poster { height: 190px; position: relative; overflow: hidden; background: var(--bg3); }
+.mc-poster { aspect-ratio: 2 / 3; position: relative; overflow: hidden; background: var(--bg3); }
 .mc-poster img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s; }
 .mc:hover .mc-poster img { transform: scale(1.04); }
 .mc-no-poster { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; color: var(--text4); }
-.mc-score { position: absolute; top: 6px; right: 6px; background: rgba(8,10,13,.88); color: var(--accent); font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(77,159,214,.2); backdrop-filter: blur(4px); }
+.mc-score { position: absolute; top: 6px; right: 6px; background: rgba(8,10,13,.88); color: var(--text); font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 5px; border: 1px solid var(--border2); font-family: var(--mono); backdrop-filter: blur(4px); }
 .mc-info { padding: 8px 10px 10px; }
 .mc-title { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mc-year { font-size: 10px; color: var(--text3); margin-top: 2px; }
 
-.mobile-mode .mc-poster { height: 150px; }
 .mobile-mode .mc-title { font-size: 11px; }
 
 /* Shared grid for all pages using MiniCard */
 .mc-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px;
 }
 .mobile-mode .mc-grid {
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 10px;
 }

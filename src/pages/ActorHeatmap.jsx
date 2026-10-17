@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { LoaderCircle, LayoutGrid } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { IMG_THUMB } from '../lib/tmdb'
 import './ActorHeatmap.css'
@@ -64,16 +65,14 @@ export default function ActorHeatmap() {
 
       {loading ? (
         <div className="hm-loading">
-          <div className="hm-loading-icon">🔍</div>
+          <div className="hm-loading-icon"><LoaderCircle size={28} className="spin" /></div>
           <div className="hm-loading-text mono">{progress || 'Scanning your library...'}</div>
         </div>
       ) : actors.length === 0 ? (
-        <div className="hm-empty">
-          <div style={{ fontSize: 48, opacity: .3, marginBottom: 16 }}>▣</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text3)' }}>Not enough data</div>
-          <div className="mono" style={{ fontSize: 13, color: 'var(--text4)', marginTop: 8 }}>
-            Add more films to see your actor heatmap
-          </div>
+        <div className="empty-state">
+          <div className="empty-state-icon"><LayoutGrid size={24} strokeWidth={1.6} /></div>
+          <div className="empty-state-title">Not enough data yet</div>
+          <div className="empty-state-sub">Add more films to see your actor heatmap</div>
         </div>
       ) : (
         <div className="hm-grid">

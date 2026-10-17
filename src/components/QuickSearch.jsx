@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { Search, Star } from 'lucide-react'
 import { searchMulti, IMG_THUMB } from '../lib/tmdb'
 import './QuickSearch.css'
 
@@ -37,7 +38,7 @@ export default function QuickSearch({ onClose, onSelect }) {
     <div className="qs-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="qs-modal" onKeyDown={handleKey}>
         <div className="qs-input-wrap">
-          <span className="qs-icon">⌘</span>
+          <span className="qs-icon"><Search size={18} /></span>
           <input
             ref={inputRef}
             value={query}
@@ -64,7 +65,7 @@ export default function QuickSearch({ onClose, onSelect }) {
                   <div className="qs-title">{r.title || r.name}</div>
                   <div className="qs-meta mono">
                     {r.media_type === 'tv' ? 'Series' : 'Film'} · {(r.release_date || r.first_air_date || '').split('-')[0]}
-                    {r.vote_average ? ` · ⭐ ${r.vote_average.toFixed(1)}` : ''}
+                    {r.vote_average ? <> · <Star size={10} fill="currentColor" strokeWidth={0} className="qs-star" /> {r.vote_average.toFixed(1)}</> : ''}
                   </div>
                 </div>
               </div>

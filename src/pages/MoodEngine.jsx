@@ -1,17 +1,18 @@
 import { useState } from 'react'
+import { Skull, Brain, Zap, Coffee, Droplets, Mountain, Ghost, GraduationCap, Smile } from 'lucide-react'
 import { discoverMovies } from '../lib/tmdb'
 import MiniCard from '../components/MiniCard'
 import './MoodEngine.css'
 
 const MOODS = [
-  { key: 'dark',     emoji: '🖤', label: 'Dark & Gritty',    genres: [80, 53], sort: 'vote_average.desc' },
-  { key: 'mindfuck', emoji: '🧠', label: 'Mindfuck',         genres: [878, 9648], sort: 'vote_average.desc' },
-  { key: 'intense',  emoji: '⚡', label: 'Intense & Tense',  genres: [28, 53], sort: 'popularity.desc' },
-  { key: 'chill',    emoji: '😌', label: 'Chill & Easy',     genres: [35, 10751], sort: 'popularity.desc' },
-  { key: 'sad',      emoji: '💧', label: 'Feel Something',   genres: [18, 10749], sort: 'vote_average.desc' },
-  { key: 'epic',     emoji: '🔥', label: 'Epic & Grand',     genres: [12, 14], sort: 'popularity.desc' },
-  { key: 'horror',   emoji: '👻', label: 'Scared',           genres: [27], sort: 'vote_average.desc' },
-  { key: 'smart',    emoji: '🎓', label: 'Smart & Sharp',    genres: [99, 36], sort: 'vote_average.desc' },
+  { key: 'dark',     icon: Skull, label: 'Dark & Gritty',    genres: [80, 53], sort: 'vote_average.desc' },
+  { key: 'mindfuck', icon: Brain, label: 'Mindfuck',         genres: [878, 9648], sort: 'vote_average.desc' },
+  { key: 'intense',  icon: Zap, label: 'Intense & Tense',  genres: [28, 53], sort: 'popularity.desc' },
+  { key: 'chill',    icon: Coffee, label: 'Chill & Easy',     genres: [35, 10751], sort: 'popularity.desc' },
+  { key: 'sad',      icon: Droplets, label: 'Feel Something',   genres: [18, 10749], sort: 'vote_average.desc' },
+  { key: 'epic',     icon: Mountain, label: 'Epic & Grand',     genres: [12, 14], sort: 'popularity.desc' },
+  { key: 'horror',   icon: Ghost, label: 'Scared',           genres: [27], sort: 'vote_average.desc' },
+  { key: 'smart',    icon: GraduationCap, label: 'Smart & Sharp',    genres: [99, 36], sort: 'vote_average.desc' },
 ]
 
 export default function MoodEngine() {
@@ -37,7 +38,7 @@ export default function MoodEngine() {
       <div className="mood-selector">
         {MOODS.map(m => (
           <button key={m.key} className={`mood-option${mood?.key === m.key ? ' active' : ''}`} onClick={() => selectMood(m)}>
-            <span className="mood-option-emoji">{m.emoji}</span>
+            <span className="mood-option-emoji"><m.icon size={24} strokeWidth={1.6} /></span>
             <span className="mood-option-label">{m.label}</span>
           </button>
         ))}
@@ -45,11 +46,11 @@ export default function MoodEngine() {
       {loading && <div className="mood-loading">Finding the perfect films for your mood...</div>}
       {!loading && films.length > 0 && (
         <>
-          <div className="mood-results-header"><div className="mood-results-title">{mood.emoji} Perfect for <span>{mood.label}</span></div></div>
+          <div className="mood-results-header"><div className="mood-results-title">Perfect for <span>{mood.label}</span></div></div>
           <div className="mc-grid">{films.map(f => <MiniCard key={f.id} film={f} />)}</div>
         </>
       )}
-      {!mood && <div className="mood-prompt"><div className="mood-prompt-icon">🎬</div><div className="mood-prompt-text">Select a mood above to get personalized recommendations</div></div>}
+      {!mood && <div className="empty-state"><div className="empty-state-icon"><Smile size={24} strokeWidth={1.6} /></div><div className="empty-state-title">How do you feel tonight?</div><div className="empty-state-sub">Pick a mood above</div></div>}
     </div>
   )
 }

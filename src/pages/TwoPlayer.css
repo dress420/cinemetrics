@@ -13,6 +13,7 @@
 .tp2-genre:hover { border-color: var(--border2); color: var(--text2); }
 .tp2-genre.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
 .tp2-actions { flex-shrink: 0; }
+.tp2-actions .btn-primary, .tp2-header-bar .btn-secondary { gap: 8px; }
 .tp2-loading { text-align: center; padding: 60px; font-size: 14px; color: var(--text4); }
 .tp2-ai-pick {
   background: linear-gradient(135deg, rgba(77,159,214,.08), var(--bg2));
@@ -20,7 +21,9 @@
   padding: 28px 32px; flex-shrink: 0;
 }
 .tp2-ai-label { font-size: 10px; letter-spacing: .16em; color: var(--accent); margin-bottom: 10px; }
-.tp2-ai-title { font-size: 28px; font-weight: 900; color: var(--text); letter-spacing: -.02em; }
+.tp2-ai-title { font-family: var(--display); font-size: 30px; font-weight: 600; color: var(--text); letter-spacing: -.01em; display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 14px; }
+.tp2-ai-meta { display: inline-flex; align-items: center; gap: 5px; font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--text3); }
+.tp2-ai-meta svg { color: var(--yellow); }
 .tp2-ai-reason { font-size: 15px; color: var(--text2); margin-top: 10px; line-height: 1.6; font-weight: 300; }
 .tp2-results {
   display: grid;

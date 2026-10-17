@@ -1,24 +1,69 @@
-const API_KEY = import.meta.env.VITE_OMDB_API_KEY
+// OMDb liefert IMDb-, Rotten-Tomatoes- und Metacritic-Werte.
+// Fallback-Key, falls die Vercel-Umgebungsvariable fehlt (VITE_-Variablen landen ohnehin im Browser-Bundle).
+const API_KEY = import.meta.env.VITE_OMDB_API_KEY || '4bf18090'
+const CACHE_PREFIX = 'omdb:v2:'
+const CACHE_DAYS = 7
 
-export async function getOMDBData(title, year) {
+const readCache = (key) => {
+  try {
+    const raw = localStorage.getItem(CACHE_PREFIX + key)
+    if (!raw) return null
+    const { t, v } = JSON.parse(raw)
+    if (Date.now() - t > CACHE_DAYS * 864e5) return null
+    return v
+  } catch { return null }
+}
+const writeCache = (key, v) => {
+  try { localStorage.setItem(CACHE_PREFIX + key, JSON.stringify({ t: Date.now(), v })) } catch {}
+}
+
+const num = (v) => (v && v !== 'N/A' ? parseFloat(String(v).replace(/,/g, '')) : null)
+
+/**
+ * Holt Bewertungen — bevorzugt über die IMDb-ID (exakt), sonst über Titel + Jahr.
+ * Gibt immer ein Objekt zurück; bei Problemen steht der Grund in `error`.
+ */
+export async function getOMDBData({ imdbId, title, year, type } = {}) {
+  const cacheKey = imdbId || `${title}|${year}|${type || ''}`
+  const cached = readCache(cacheKey)
+  if (cached) return cached
+
   const url = new URL('https://www.omdbapi.com/')
   url.searchParams.set('apikey', API_KEY)
-  url.searchParams.set('t', title)
-  if (year) url.searchParams.set('y', year)
+  if (imdbId) {
+    url.searchParams.set('i', imdbId)
+  } else if (title) {
+    url.searchParams.set('t', title)
+    if (year) url.searchParams.set('y', year)
+    if (type) url.searchParams.set('type', type === 'tv' ? 'series' : 'movie')
+  } else {
+    return { error: 'missing-id' }
+  }
+
   try {
     const res = await fetch(url)
-    if (!res.ok) return null
-    const data = await res.json()
-    if (data.Response === 'False') return null
-    const rt = (data.Ratings || []).find(r => r.Source === 'Rotten Tomatoes')
-    return {
-      imdbRating: data.imdbRating !== 'N/A' ? parseFloat(data.imdbRating) : null,
-      imdbVotes: data.imdbVotes !== 'N/A' ? data.imdbVotes : null,
-      rtRating: rt ? parseInt(rt.Value) : null,
-      metacritic: data.Metascore !== 'N/A' ? parseInt(data.Metascore) : null,
-      rated: data.Rated,
-      awards: data.Awards,
-      boxOffice: data.BoxOffice,
+    const data = await res.json().catch(() => ({}))
+    if (data.Response === 'False' || !res.ok) {
+      const msg = String(data.Error || res.status)
+      const error = /api key/i.test(msg) ? 'invalid-key'
+        : /limit/i.test(msg) ? 'limit'
+        : 'not-found'
+      return { error }
     }
-  } catch { return null }
+    const rating = (src) => (data.Ratings || []).find(r => r.Source === src)?.Value
+    const result = {
+      imdbId: data.imdbID || imdbId || null,
+      imdbRating: num(data.imdbRating),
+      imdbVotes: data.imdbVotes !== 'N/A' ? data.imdbVotes : null,
+      rtRating: rating('Rotten Tomatoes') ? parseInt(rating('Rotten Tomatoes')) : null,
+      metacritic: num(data.Metascore),
+      rated: data.Rated !== 'N/A' ? data.Rated : null,
+      awards: data.Awards && data.Awards !== 'N/A' ? data.Awards : null,
+      boxOffice: data.BoxOffice && data.BoxOffice !== 'N/A' ? data.BoxOffice : null,
+    }
+    writeCache(cacheKey, result)
+    return result
+  } catch {
+    return { error: 'network' }
+  }
 }

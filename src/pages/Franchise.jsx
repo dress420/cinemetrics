@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Check, Star, Plus, Layers } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { IMG_THUMB } from '../lib/tmdb'
 import './Franchise.css'
@@ -114,15 +115,15 @@ export default function Franchise() {
                       ? <img src={`${IMG_THUMB}${p.poster_path}`} alt={p.title} />
                       : <div className="fr-film-no-poster">{p.title?.charAt(0)}</div>
                     }
-                    {isSeen && <div className="fr-seen-badge">✓</div>}
+                    {isSeen && <div className="fr-seen-badge"><Check size={18} strokeWidth={2.5} /></div>}
                   </div>
                   <div className="fr-film-info">
                     <div className="fr-film-title">{p.title}</div>
                     <div className="fr-film-year mono">{p.release_date?.split('-')[0] || '—'}</div>
-                    {p.vote_average > 0 && <div className="fr-film-score mono">⭐ {p.vote_average.toFixed(1)}</div>}
+                    {p.vote_average > 0 && <div className="fr-film-score mono"><Star size={11} fill="currentColor" strokeWidth={0} /> {p.vote_average.toFixed(1)}</div>}
                   </div>
                   {!isSeen && (
-                    <button className="fr-add-btn" onClick={() => addToWatchlist(p)} title="Add to watchlist">+</button>
+                    <button className="fr-add-btn" onClick={() => addToWatchlist(p)} title="Add to watchlist" aria-label="Add to watchlist"><Plus size={16} /></button>
                   )}
                 </div>
               )

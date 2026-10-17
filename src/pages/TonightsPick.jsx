@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { RefreshCw, Clapperboard, Star, ArrowRight } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { discoverMovies, IMG_THUMB } from '../lib/tmdb'
 import './TonightsPick.css'
@@ -90,9 +91,9 @@ export default function TonightsPick() {
     <div className="tp-page">
       <div className="tp-header-bar">
         <div><div className="page-title">Tonight's Pick</div><div className="page-sub">The perfect film for right now.</div></div>
-        <button className="btn-primary" onClick={generate} disabled={loading}>{loading ? 'Thinking...' : '↻ New Pick'}</button>
+        <button className="btn-primary" onClick={generate} disabled={loading}><RefreshCw size={15} className={loading ? 'spin' : ''} /> {loading ? 'Thinking…' : 'New pick'}</button>
       </div>
-      {loading && <div className="tp-loading"><div className="tp-loading-icon">🎬</div><div className="tp-loading-text mono">Finding your perfect film...</div></div>}
+      {loading && <div className="tp-loading"><div className="tp-loading-icon"><Clapperboard size={40} strokeWidth={1.4} /></div><div className="tp-loading-text mono">Finding your perfect film...</div></div>}
       {error && <div className="tp-error mono">{error}</div>}
       {!loading && pick && (
         <div className="tp-hero" onClick={openDetail} style={pick.backdrop_path ? { backgroundImage: `url(https://image.tmdb.org/t/p/w1280${pick.backdrop_path})` } : {}}>
@@ -103,11 +104,11 @@ export default function TonightsPick() {
                 {pick.poster_path && <img className="tp-poster" src={`${IMG_THUMB}${pick.poster_path}`} alt={pick.title} />}
                 <div className="tp-hero-info">
                   <h1 className="tp-title">{pick.title}</h1>
-                  <div className="tp-meta mono">{pick.release_year}{pick.vote_average ? ` · ⭐ ${pick.vote_average.toFixed(1)}` : ''}{pick.mood ? ` · ${pick.mood}` : ''}</div>
+                  <div className="tp-meta mono">{pick.release_year}{pick.vote_average ? <> · <Star size={12} fill="currentColor" strokeWidth={0} className="tp-star" /> {pick.vote_average.toFixed(1)}</> : ''}{pick.mood ? ` · ${pick.mood}` : ''}</div>
                   <div className="tp-genres">{(pick.genres || []).map(g => <span key={g} className="tag">{g}</span>)}</div>
                   <div className="tp-reason">{pick.reason}</div>
                   {pick.overview && <div className="tp-overview">{pick.overview.slice(0, 200)}...</div>}
-                  <div className="tp-hint mono">Click for full details & scores →</div>
+                  <div className="tp-hint">Full details &amp; scores <ArrowRight size={14} /></div>
                 </div>
               </div>
             </div>

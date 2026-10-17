@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { useState, useEffect, useRef } from 'react'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
 import MobileNav from './components/MobileNav'
 import MobileHeader from './components/MobileHeader'
-import ViewModeToggle from './components/ViewModeToggle'
 import AddFilmModal from './components/AddFilmModal'
 import QuickSearch from './components/QuickSearch'
 import FilmDetailPanel from './components/FilmDetailPanel'
@@ -30,49 +29,49 @@ import ComingSoon from './pages/ComingSoon'
 import { supabase } from './lib/supabase'
 
 function getInitialMode() {
-  const saved = localStorage.getItem('cinemetrics-viewmode')
-  if (saved === 'mobile' || saved === 'desktop') return saved
-  // Auto-detect: touch device or narrow screen = mobile
+  try {
+    const saved = localStorage.getItem('cinemetrics-viewmode')
+    if (saved === 'mobile' || saved === 'desktop') return saved
+  } catch {}
   const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
-  const isNarrow = window.innerWidth <= 768
-  return (isTouch && isNarrow) ? 'mobile' : 'desktop'
+  const w = window.innerWidth
+  return (w <= 640 || (isTouch && w <= 900)) ? 'mobile' : 'desktop'
 }
 
 export default function App() {
-  const [viewMode, setViewMode]             = useState(getInitialMode)
-  const [showAdd, setShowAdd]               = useState(false)
-  const [addPreselect, setAddPreselect]     = useState(null)
-  const [showSearch, setShowSearch]         = useState(false)
-  const [detailFilm, setDetailFilm]         = useState(null)
-  const [filmCount, setFilmCount]           = useState(0)
-  const [refreshKey, setRefreshKey]         = useState(0)
+  const [viewMode, setViewMode]         = useState(getInitialMode)
+  const [showAdd, setShowAdd]           = useState(false)
+  const [addPreselect, setAddPreselect] = useState(null)
+  const [showSearch, setShowSearch]     = useState(false)
+  const [detailFilm, setDetailFilm]     = useState(null)
+  const [filmCount, setFilmCount]       = useState(0)
+  const [refreshKey, setRefreshKey]     = useState(0)
+  const mainRef = useRef(null)
+  const location = useLocation()
 
   const isMobile = viewMode === 'mobile'
 
   useEffect(() => { loadCount() }, [refreshKey])
 
-  // Global film click handler
+  // Beim Seitenwechsel wieder nach oben scrollen
+  useEffect(() => { mainRef.current?.scrollTo(0, 0) }, [location.pathname])
+
+  // Globaler Handler: jede Karte kann das Detail-Panel öffnen
   useEffect(() => {
     window.__cinemetrics_openfilm = (film) => setDetailFilm(film)
     return () => { delete window.__cinemetrics_openfilm }
   }, [])
 
-  // Ctrl+K shortcut (desktop)
+  // Cmd/Ctrl+K → Schnellsuche
   useEffect(() => {
     const handler = (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault()
         setShowSearch(s => !s)
       }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [])
-
-  // Prevent overscroll bounce on iOS PWA
-  useEffect(() => {
-    document.body.style.overscrollBehavior = 'none'
-    return () => { document.body.style.overscrollBehavior = '' }
   }, [])
 
   const loadCount = async () => {
@@ -83,67 +82,59 @@ export default function App() {
   const toggleMode = () => {
     const next = isMobile ? 'desktop' : 'mobile'
     setViewMode(next)
-    localStorage.setItem('cinemetrics-viewmode', next)
+    try { localStorage.setItem('cinemetrics-viewmode', next) } catch {}
   }
 
   const handleAdded = () => setRefreshKey(k => k + 1)
   const openAdd = (preselect) => { setAddPreselect(preselect || null); setShowAdd(true) }
+  const openSearch = () => setShowSearch(true)
   const handleFilmClick = (film) => setDetailFilm(film)
   const handleAddFromDetail = (film) => { setDetailFilm(null); openAdd(film) }
 
-  const routes = (
-    <Routes>
-      <Route path="/"                element={<Dashboard      key={refreshKey} onAddFilm={() => openAdd()} refreshKey={refreshKey} onFilmClick={handleFilmClick} />} />
-      <Route path="/library"         element={<Library        key={refreshKey} onAddFilm={() => openAdd()} refreshKey={refreshKey} />} />
-      <Route path="/watchlist"       element={<Watchlist      onAddFilm={() => openAdd()} />} />
-      <Route path="/watching"        element={<Watching       onAddFilm={() => openAdd()} />} />
-      <Route path="/recommendations" element={<Recommendations />} />
-      <Route path="/mood"            element={<MoodEngine />} />
-      <Route path="/gems"            element={<HiddenGems />} />
-      <Route path="/rabbit-hole"     element={<RabbitHole />} />
-      <Route path="/vibes"           element={<Vibes />} />
-      <Route path="/nl-search"       element={<NLSearch />} />
-      <Route path="/tonights-pick"   element={<TonightsPick />} />
-      <Route path="/two-player"      element={<TwoPlayer />} />
-      <Route path="/time-budget"     element={<TimeBudget />} />
-      <Route path="/dna"             element={<DNA />} />
-      <Route path="/stats"           element={<Stats />} />
-      <Route path="/heatmap"         element={<ActorHeatmap />} />
-      <Route path="/franchise"       element={<Franchise />} />
-      <Route path="/streaming"       element={<Streaming />} />
-      <Route path="/import"          element={<ImportExport />} />
-      <Route path="/watchparty"      element={<ComingSoon title="Watchparty" icon="⟳" />} />
-    </Routes>
-  )
-
-  const bottomPad = isMobile ? 'calc(60px + env(safe-area-inset-bottom, 0px))' : '0px'
-
   return (
-    <div
-      className={isMobile ? 'mobile-mode' : 'desktop-mode'}
-      style={{
-        display: 'flex',
-        flexDirection: isMobile ? 'column' : 'row',
-        height: '100vh',
-        width: '100vw',
-        overflow: 'hidden',
-      }}
-    >
-      {!isMobile && <Sidebar filmCount={filmCount} />}
-      {isMobile && <MobileHeader onSearch={() => setShowSearch(true)} onAdd={() => openAdd()} />}
+    <div className={`app ${isMobile ? 'mobile-mode' : 'desktop-mode'}`}>
+      {!isMobile && (
+        <Sidebar
+          filmCount={filmCount}
+          onSearch={openSearch}
+          onAdd={() => openAdd()}
+          onToggleMode={toggleMode}
+        />
+      )}
+      {isMobile && <MobileHeader onSearch={openSearch} onAdd={() => openAdd()} />}
 
-      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', minWidth: 0, paddingBottom: isMobile ? bottomPad : 0 }}>
-        {routes}
-      </div>
+      <main className="app-main" ref={mainRef}>
+        <Routes>
+          <Route path="/"                element={<Dashboard key={refreshKey} onAddFilm={() => openAdd()} onSearch={openSearch} onFilmClick={handleFilmClick} isMobile={isMobile} />} />
+          <Route path="/library"         element={<Library   key={refreshKey} onAddFilm={() => openAdd()} refreshKey={refreshKey} />} />
+          <Route path="/watchlist"       element={<Watchlist onAddFilm={() => openAdd()} />} />
+          <Route path="/watching"        element={<Watching  onAddFilm={() => openAdd()} />} />
+          <Route path="/recommendations" element={<Recommendations />} />
+          <Route path="/mood"            element={<MoodEngine />} />
+          <Route path="/gems"            element={<HiddenGems />} />
+          <Route path="/rabbit-hole"     element={<RabbitHole />} />
+          <Route path="/vibes"           element={<Vibes />} />
+          <Route path="/nl-search"       element={<NLSearch />} />
+          <Route path="/tonights-pick"   element={<TonightsPick />} />
+          <Route path="/two-player"      element={<TwoPlayer />} />
+          <Route path="/time-budget"     element={<TimeBudget />} />
+          <Route path="/dna"             element={<DNA />} />
+          <Route path="/stats"           element={<Stats />} />
+          <Route path="/heatmap"         element={<ActorHeatmap />} />
+          <Route path="/franchise"       element={<Franchise />} />
+          <Route path="/streaming"       element={<Streaming />} />
+          <Route path="/import"          element={<ImportExport />} />
+          <Route path="*"                element={<ComingSoon title="Seite nicht gefunden" />} />
+        </Routes>
+      </main>
 
-      {isMobile && <MobileNav filmCount={filmCount} />}
-      <ViewModeToggle mode={viewMode} onToggle={toggleMode} />
+      {isMobile && <MobileNav filmCount={filmCount} onToggleMode={toggleMode} />}
 
       {showSearch && (
         <QuickSearch onClose={() => setShowSearch(false)} onSelect={(film) => { setShowSearch(false); handleFilmClick(film) }} />
       )}
       {detailFilm && (
-        <FilmDetailPanel film={detailFilm} onClose={() => setDetailFilm(null)} onAdd={handleAddFromDetail} />
+        <FilmDetailPanel film={detailFilm} onClose={() => setDetailFilm(null)} onAdd={handleAddFromDetail} onOpenFilm={setDetailFilm} />
       )}
       {showAdd && (
         <AddFilmModal onClose={() => { setShowAdd(false); setAddPreselect(null) }} onAdded={handleAdded} preselect={addPreselect} />

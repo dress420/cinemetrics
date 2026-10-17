@@ -1,84 +1,74 @@
+import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
+import { Search, Plus, Smartphone } from 'lucide-react'
+import { NAV_GROUPS } from '../lib/nav'
+import { LogoMark } from './Logo'
 import './Sidebar.css'
 
-const nav = [
-  {
-    section: 'CORE',
-    items: [
-      { to: '/', label: 'Dashboard', icon: '⬡' },
-      { to: '/library', label: 'My Library', icon: '◈', badge: true },
-      { to: '/watchlist', label: 'Watchlist', icon: '◎' },
-      { to: '/watching', label: 'Watching', icon: '◷' },
-    ],
-  },
-  {
-    section: 'DISCOVERY',
-    items: [
-      { to: '/tonights-pick', label: "Tonight's Pick", icon: '◉' },
-      { to: '/nl-search', label: 'AI Search', icon: '⟁' },
-      { to: '/vibes', label: 'Vibes', icon: '✦' },
-      { to: '/mood', label: 'Mood Engine', icon: '◬' },
-      { to: '/recommendations', label: 'Recommendations', icon: '⟐' },
-      { to: '/gems', label: 'Hidden Gems', icon: '◇' },
-      { to: '/rabbit-hole', label: 'Rabbit Hole', icon: '⊙' },
-      { to: '/two-player', label: 'Two-Player', icon: '⚔' },
-      { to: '/time-budget', label: 'Time Budget', icon: '⏱' },
-      { to: '/streaming', label: 'Streaming', icon: '▸' },
-    ],
-  },
-  {
-    section: 'ANALYTICS',
-    items: [
-      { to: '/dna', label: 'DNA Profile', icon: '▦' },
-      { to: '/stats', label: 'Stats & Wrapped', icon: '◫' },
-      { to: '/heatmap', label: 'Actor Heatmap', icon: '▣' },
-    ],
-  },
-  {
-    section: 'TOOLS',
-    items: [
-      { to: '/franchise', label: 'Franchise', icon: '⊞' },
-      { to: '/import', label: 'Import / Export', icon: '◧' },
-    ],
-  },
-]
+// Schmale Icon-Leiste (Ember-Layout). Labels erscheinen als Tooltip beim Hovern.
+export default function Sidebar({ filmCount, onSearch, onAdd, onToggleMode }) {
+  const [tip, setTip] = useState(null)
 
-export default function Sidebar({ filmCount }) {
+  const showTip = (label) => (e) => {
+    const r = e.currentTarget.getBoundingClientRect()
+    setTip({ label, top: r.top + r.height / 2 })
+  }
+  const hideTip = () => setTip(null)
+  const tipProps = (label) => ({
+    onMouseEnter: showTip(label),
+    onMouseLeave: hideTip,
+    onFocus: showTip(label),
+    onBlur: hideTip,
+    'aria-label': label,
+  })
+
   return (
-    <aside className="sidebar">
-      <div className="logo">
-        <div className="logo-text">CINE<span>METRICS</span></div>
+    <aside className="rail">
+      <NavLink to="/" className="rail-logo" {...tipProps('CineMetrics')}>
+        <LogoMark size={36} />
+      </NavLink>
+
+      <div className="rail-actions">
+        <button className="rail-item" onClick={onSearch} {...tipProps('Search  ⌘K')}>
+          <Search size={19} strokeWidth={1.75} />
+        </button>
+        <button className="rail-item rail-item-add" onClick={onAdd} {...tipProps('Add film')}>
+          <Plus size={19} strokeWidth={2} />
+        </button>
       </div>
 
-      <nav className="nav">
-        {nav.map((group) => (
-          <div key={group.section}>
-            <div className="nav-section">{group.section}</div>
-            {group.items.map((item) => (
+      <nav className="rail-nav" onScroll={hideTip}>
+        {NAV_GROUPS.map((group, gi) => (
+          <div key={group.section} className="rail-group">
+            {gi > 0 && <div className="rail-sep" />}
+            {group.items.map(({ to, label, icon: Icon, badge }) => (
               <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === '/'}
-                className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+                key={to}
+                to={to}
+                end={to === '/'}
+                className={({ isActive }) => `rail-item${isActive ? ' active' : ''}`}
+                {...tipProps(badge && filmCount ? `${label} · ${filmCount}` : label)}
               >
-                <span className="nav-icon">{item.icon}</span>
-                {item.label}
-                {item.badge && filmCount > 0 && (
-                  <span className="nav-badge">{filmCount}</span>
-                )}
+                <Icon size={19} strokeWidth={1.75} />
+                {badge && filmCount > 0 && <span className="rail-dot" />}
               </NavLink>
             ))}
           </div>
         ))}
       </nav>
 
-      <div className="sidebar-footer">
-        <div className="search-hint mono">⌘K Quick Search</div>
-        <div className="user-pill">
-          <div className="user-avatar">D</div>
-          <div className="user-name">dress420</div>
-        </div>
+      <div className="rail-footer">
+        <button className="rail-item" onClick={onToggleMode} {...tipProps('Mobile view')}>
+          <Smartphone size={18} strokeWidth={1.75} />
+        </button>
+        <div className="rail-avatar" {...tipProps('dress420')} tabIndex={0}>D</div>
       </div>
+
+      {tip && (
+        <div className="rail-tip" style={{ top: tip.top }} role="tooltip">
+          {tip.label}
+        </div>
+      )}
     </aside>
   )
 }

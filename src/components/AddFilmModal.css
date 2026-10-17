@@ -2,8 +2,10 @@
   display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px;
 }
 .modal-close {
+  display: flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px;
   background: var(--bg3); color: var(--text2);
-  font-size: 16px; padding: 6px 10px; border-radius: 6px;
+  border-radius: 10px;
   border: 1px solid var(--border); line-height: 1;
   transition: all .15s;
 }
@@ -57,4 +59,4 @@
 .status-btn:hover { border-color: var(--border2); color: var(--text2); }
 .status-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
 
-.save-btn { width: 100%; margin-top: 20px; font-size: 15px; padding: 13px; font-weight: 700; letter-spacing: .01em; }
+.save-btn { width: 100%; margin-top: 20px; font-size: 15px; height: 48px; border-radius: 12px; font-weight: 600; }

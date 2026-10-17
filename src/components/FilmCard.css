@@ -15,7 +15,7 @@
 }
 
 .film-poster {
-  height: 210px;
+  aspect-ratio: 2 / 3;
   position: relative;
   overflow: hidden;
   background: var(--bg3);
@@ -35,12 +35,12 @@
 
 .film-badge {
   position: absolute; top: 8px; right: 8px;
-  background: rgba(8,10,13,.88);
-  color: var(--accent);
+  background: rgba(8,10,13,.85);
+  color: var(--text);
   font-size: 11px; font-weight: 600;
   padding: 3px 8px; border-radius: 5px;
   font-family: var(--mono);
-  border: 1px solid rgba(77,159,214,.25);
+  border: 1px solid var(--border2);
   backdrop-filter: blur(4px);
 }
 
@@ -52,7 +52,7 @@
   text-transform: uppercase;
   backdrop-filter: blur(4px);
 }
-.film-status-tag.seen     { background: rgba(77,159,214,.85);  color: #fff; }
+.film-status-tag.seen     { background: rgba(77,159,214,.9);  color: var(--accent-ink); }
 .film-status-tag.watching { background: rgba(76,175,125,.8);   color: #fff; }
 .film-status-tag.watchlist{ background: rgba(22,28,40,.85);    color: var(--text2); border: 1px solid var(--border2); }
 .film-status-tag.dropped  { background: rgba(224,85,85,.8);    color: #fff; }

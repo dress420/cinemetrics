@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Star, RotateCcw, ArrowRight } from 'lucide-react'
 import { discoverMovies } from '../lib/tmdb'
 import MiniCard from '../components/MiniCard'
 import './TwoPlayer.css'
@@ -49,7 +50,7 @@ export default function TwoPlayer() {
     <div className="tp2-page">
       <div className="tp2-header-bar">
         <div><div className="page-title">Two-Player Mode</div><div className="page-sub">Find a film you'll both love.</div></div>
-        {step === 3 && <button className="btn-secondary" onClick={reset}>↻ Start Over</button>}
+        {step === 3 && <button className="btn-secondary" onClick={reset}><RotateCcw size={15} /> Start over</button>}
       </div>
       {step <= 2 && (<>
         <div className="tp2-player-label">
@@ -60,13 +61,13 @@ export default function TwoPlayer() {
           {GENRES.map(g => <button key={g.id} className={`tp2-genre${currentList.includes(g.id) ? ' active' : ''}`} onClick={() => toggle(step, g.id)}>{g.name}</button>)}
         </div>
         <div className="tp2-actions">
-          {step === 1 && <button className="btn-primary" onClick={() => setStep(2)} disabled={p1.length === 0}>Player 2's Turn →</button>}
-          {step === 2 && <button className="btn-primary" onClick={findFilms} disabled={p2.length === 0}>Find Our Film →</button>}
+          {step === 1 && <button className="btn-primary" onClick={() => setStep(2)} disabled={p1.length === 0}>Player 2's turn <ArrowRight size={16} /></button>}
+          {step === 2 && <button className="btn-primary" onClick={findFilms} disabled={p2.length === 0}>Find our film <ArrowRight size={16} /></button>}
         </div>
       </>)}
       {step === 3 && loading && <div className="tp2-loading mono">Finding the perfect compromise...</div>}
       {step === 3 && !loading && (<>
-        {topPick && <div className="tp2-ai-pick"><div className="tp2-ai-label mono">TOP PICK FOR BOTH</div><div className="tp2-ai-title">{topPick.title} <span style={{ color: 'var(--text4)', fontSize: 18, fontWeight: 400 }}>({topPick.year}) ⭐ {topPick.score}</span></div><div className="tp2-ai-reason">{topPick.reason}</div></div>}
+        {topPick && <div className="tp2-ai-pick"><div className="tp2-ai-label mono">TOP PICK FOR BOTH</div><div className="tp2-ai-title">{topPick.title} <span className="tp2-ai-meta">{topPick.year} · <Star size={14} fill="currentColor" strokeWidth={0} /> {topPick.score}</span></div><div className="tp2-ai-reason">{topPick.reason}</div></div>}
         <div className="mc-grid">{results.map(f => <MiniCard key={f.id} film={f} />)}</div>
       </>)}
     </div>

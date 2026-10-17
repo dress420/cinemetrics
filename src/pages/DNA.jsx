@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Film, Calendar, Star, Tv, Dna } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import './DNA.css'
 
@@ -40,10 +41,10 @@ export default function DNA() {
   const total = films.length
 
   const dnaProfile = [
-    { label: 'Top Genre', value: topGenre, icon: '🎬' },
-    { label: 'Fav Decade', value: topDecade ? `${topDecade[0]}s` : '—', icon: '📅' },
-    { label: 'Avg Rating', value: avgRating ? `${avgRating}/10` : '—', icon: '⭐' },
-    { label: 'Films vs Series', value: `${mediaTypes.movie}F / ${mediaTypes.tv}S`, icon: '📺' },
+    { label: 'Top Genre', value: topGenre, icon: Film },
+    { label: 'Fav Decade', value: topDecade ? `${topDecade[0]}s` : '—', icon: Calendar },
+    { label: 'Avg Rating', value: avgRating ? `${avgRating}/10` : '—', icon: Star },
+    { label: 'Films vs Series', value: `${mediaTypes.movie}F / ${mediaTypes.tv}S`, icon: Tv },
   ]
 
   const dnaFingerprint = topGenres.map(([genre, count]) => ({
@@ -70,10 +71,10 @@ export default function DNA() {
       </div>
 
       {total === 0 ? (
-        <div className="dna-empty">
-          <div style={{ fontSize: 48, marginBottom: 16, opacity: .4 }}>🧬</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text3)' }}>No DNA yet</div>
-          <div style={{ fontSize: 14, color: 'var(--text4)', marginTop: 8, fontFamily: 'var(--mono)' }}>Add at least 10 films to generate your profile</div>
+        <div className="empty-state">
+          <div className="empty-state-icon"><Dna size={24} strokeWidth={1.6} /></div>
+          <div className="empty-state-title">No DNA yet</div>
+          <div className="empty-state-sub">Add at least 10 films to generate your profile</div>
         </div>
       ) : (
         <>
@@ -109,7 +110,7 @@ export default function DNA() {
               <div className="dna-stats-row">
                 {dnaProfile.map(({ label, value, icon }) => (
                   <div key={label} className="dna-stat-card">
-                    <div className="dna-stat-icon">{icon}</div>
+                    <div className="dna-stat-icon">{(() => { const I = icon; return <I size={20} strokeWidth={1.6} /> })()}</div>
                     <div className="dna-stat-value">{value}</div>
                     <div className="dna-stat-label mono">{label}</div>
                   </div>

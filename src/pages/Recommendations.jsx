@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { ThumbsUp } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { discoverMovies } from '../lib/tmdb'
 import MiniCard from '../components/MiniCard'
@@ -45,11 +46,11 @@ export default function Recommendations() {
   return (
     <div className="recs-page">
       <div className="recs-header">
-        <div className="page-title">AI Recommendations</div>
+        <div className="page-title">For You</div>
         <div className="page-sub">{reason || 'Analyzing your taste...'}</div>
       </div>
       {loading ? <div className="recs-loading">Analyzing your DNA profile...</div>
-        : films.length === 0 ? <div className="recs-empty"><div style={{ fontSize: 48, opacity: .4 }}>⟁</div><div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text3)', marginTop: 16 }}>Not enough data</div><div className="mono" style={{ fontSize: 14, color: 'var(--text4)', marginTop: 8 }}>Add at least 5 films to get recommendations</div></div>
+        : films.length === 0 ? <div className="empty-state"><div className="empty-state-icon"><ThumbsUp size={24} strokeWidth={1.6} /></div><div className="empty-state-title">Not enough data yet</div><div className="empty-state-sub">Add at least 5 films to get recommendations</div></div>
         : <div className="mc-grid">{recs.map(f => <MiniCard key={f.id} film={f} />)}</div>
       }
     </div>

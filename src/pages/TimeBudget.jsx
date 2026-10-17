@@ -1,16 +1,17 @@
 import { useState } from 'react'
+import { Zap, Clock, Film, Clapperboard, Popcorn, Mountain, Timer } from 'lucide-react'
 import { discoverMovies } from '../lib/tmdb'
 import { supabase } from '../lib/supabase'
 import MiniCard from '../components/MiniCard'
 import './TimeBudget.css'
 
 const BUDGETS = [
-  { mins: 30,  label: '30 min',  icon: '⚡' },
-  { mins: 60,  label: '1 hour',  icon: '🕐' },
-  { mins: 90,  label: '90 min',  icon: '🎬' },
-  { mins: 120, label: '2 hours', icon: '🎞️' },
-  { mins: 150, label: '2.5 hrs', icon: '🍿' },
-  { mins: 999, label: 'Epic',    icon: '🏔️' },
+  { mins: 30,  label: '30 min',  icon: Zap },
+  { mins: 60,  label: '1 hour',  icon: Clock },
+  { mins: 90,  label: '90 min',  icon: Film },
+  { mins: 120, label: '2 hours', icon: Clapperboard },
+  { mins: 150, label: '2.5 hrs', icon: Popcorn },
+  { mins: 999, label: 'Epic',    icon: Mountain },
 ]
 
 export default function TimeBudget() {
@@ -42,11 +43,12 @@ export default function TimeBudget() {
       <div className="tb-grid">
         {BUDGETS.map(b => (
           <button key={b.mins} className={`tb-card${budget?.mins === b.mins ? ' active' : ''}`} onClick={() => selectBudget(b)}>
-            <span className="tb-icon">{b.icon}</span><span className="tb-label">{b.label}</span>
+            <span className="tb-icon"><b.icon size={22} strokeWidth={1.6} /></span><span className="tb-label">{b.label}</span>
           </button>
         ))}
       </div>
       {loading && <div className="tb-loading mono">Finding films that fit your schedule...</div>}
+      {!budget && !loading && <div className="empty-state"><div className="empty-state-icon"><Timer size={24} strokeWidth={1.6} /></div><div className="empty-state-title">How much time do you have?</div><div className="empty-state-sub">Pick a length above</div></div>}
       {!loading && budget && (<>
         {watchlist.length > 0 && <div className="tb-section"><div className="section-title mono">FROM YOUR WATCHLIST</div><div className="mc-grid">{watchlist.map(f => <MiniCard key={f.id} film={f} />)}</div></div>}
         {discover.length > 0 && <div className="tb-section"><div className="section-title mono">DISCOVER — {budget.mins < 999 ? `UNDER ${budget.mins} MIN` : '150+ MIN EPICS'}</div><div className="mc-grid">{discover.map(f => <MiniCard key={f.id} film={f} />)}</div></div>}

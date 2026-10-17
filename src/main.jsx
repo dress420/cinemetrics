@@ -1,8 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import App from './App.jsx'
+// Schriften lokal gehostet (schneller, offline-fähig, kein Google-Fonts-Tracking)
+import '@fontsource-variable/inter'
+import '@fontsource-variable/playfair-display'
+import '@fontsource-variable/jetbrains-mono'
 import './index.css'
+import App from './App.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -14,7 +18,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').then((reg) => {
-      // Check for updates every 30 min
       setInterval(() => reg.update(), 30 * 60 * 1000)
     }).catch(() => {})
   })

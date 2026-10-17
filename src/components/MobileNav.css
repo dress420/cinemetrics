@@ -1,13 +1,15 @@
-/* ===== BOTTOM TAB BAR ===== */
+/* ===== Bottom-Tab-Leiste ===== */
 .mob-nav {
   position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: 64px;
-  background: var(--bg2);
+  left: 0; right: 0; bottom: 0;
+  height: calc(var(--mob-nav-h) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: rgba(12, 15, 20, .96);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   border-top: 1px solid var(--border);
   display: flex;
   z-index: 800;
-  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 .mob-tab {
@@ -16,157 +18,112 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  color: var(--text4);
+  gap: 4px;
+  color: var(--text3);
   text-decoration: none;
-  background: none;
-  border: none;
-  font-family: var(--sans);
-  transition: color .15s;
+  border-radius: 0;
   -webkit-tap-highlight-color: transparent;
-  cursor: pointer;
+  position: relative;
+  min-height: 48px;
 }
-
-.mob-tab.active {
-  color: var(--accent);
+.mob-tab.active { color: var(--accent); }
+.mob-tab.active::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 26px; height: 2px;
+  border-radius: 0 0 2px 2px;
+  background: var(--accent);
 }
+.mob-tab:active svg { transform: scale(.9); }
+.mob-tab svg { transition: transform .12s; }
+.mob-tab-label { font-size: 10.5px; font-weight: 600; letter-spacing: .01em; }
 
-.mob-tab-icon {
-  font-size: 20px;
-  line-height: 1;
-}
-
-.mob-tab-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .02em;
-}
-
-/* ===== MORE SHEET (bottom drawer) ===== */
+/* ===== "Mehr"-Sheet ===== */
 .mob-more-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, .65);
+  position: fixed; inset: 0;
+  background: rgba(3,5,8,.7);
+  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   z-index: 850;
   display: flex;
   align-items: flex-end;
   animation: mobFadeIn .2s ease;
 }
-
-@keyframes mobFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+@keyframes mobFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 .mob-more-sheet {
   width: 100%;
-  max-height: 75vh;
+  max-height: 82vh;
+  max-height: 82dvh;
   background: var(--bg2);
   border-top: 1px solid var(--border2);
-  border-radius: 20px 20px 0 0;
+  border-radius: 22px 22px 0 0;
   display: flex;
   flex-direction: column;
-  animation: mobSlideUp .25s cubic-bezier(.16, 1, .3, 1);
+  animation: mobSlideUp .28s cubic-bezier(.16, 1, .3, 1);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+@keyframes mobSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-@keyframes mobSlideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-
-.mob-more-handle {
-  width: 36px;
-  height: 4px;
-  background: var(--border2);
-  border-radius: 2px;
-  margin: 10px auto 0;
-  flex-shrink: 0;
-}
+.mob-more-handle { width: 38px; height: 4px; background: var(--border3); border-radius: 2px; margin: 10px auto 0; flex-shrink: 0; }
 
 .mob-more-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px 12px;
-  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px 8px; flex-shrink: 0;
 }
-
-.mob-more-title {
-  font-size: 18px;
-  font-weight: 900;
-  color: var(--text);
-  letter-spacing: .06em;
-}
-
 .mob-more-close {
-  background: var(--bg3);
-  color: var(--text3);
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(255,255,255,.05); color: var(--text2);
+  display: flex; align-items: center; justify-content: center;
 }
 
 .mob-more-scroll {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  padding: 0 12px 20px;
-  -webkit-overflow-scrolling: touch;
-}
-
-.mob-more-group {
-  margin-bottom: 8px;
+  overscroll-behavior: contain;
+  padding: 0 14px 18px;
 }
 
 .mob-more-section {
-  font-size: 9px;
-  letter-spacing: .14em;
-  color: var(--text4);
-  padding: 14px 12px 6px;
-  text-transform: uppercase;
+  font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--text3); font-family: var(--mono);
+  padding: 16px 4px 8px;
 }
+.mob-more-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
 .mob-more-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 13px 14px;
-  border-radius: 10px;
-  color: var(--text3);
-  font-size: 15px;
-  font-weight: 500;
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.025);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-size: 13.5px; font-weight: 500;
   text-decoration: none;
-  transition: all .1s;
   -webkit-tap-highlight-color: transparent;
+  min-height: 52px;
 }
-
-.mob-more-item:active {
-  background: var(--bg3);
-}
-
-.mob-more-item.active {
-  color: var(--accent);
-  background: var(--accent-dim);
-}
-
+.mob-more-item:active { background: rgba(255,255,255,.06); }
+.mob-more-item.active { color: var(--accent); border-color: rgba(77,159,214,.3); background: var(--accent-dim); }
 .mob-more-icon {
-  font-size: 16px;
-  width: 22px;
-  text-align: center;
-  flex-shrink: 0;
+  width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.04);
+}
+.mob-more-item.active .mob-more-icon { background: rgba(77,159,214,.14); }
+.mob-more-label { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mob-more-badge {
+  font-size: 10.5px; font-family: var(--mono); color: var(--accent);
+  background: var(--accent-dim); padding: 1px 7px; border-radius: 9px;
 }
 
-.mob-more-badge {
-  margin-left: auto;
-  font-size: 11px;
-  color: var(--accent);
-  background: var(--accent-dim);
-  padding: 2px 8px;
-  border-radius: 10px;
-  border: 1px solid rgba(77, 159, 214, .2);
+.mob-more-mode {
+  margin-top: 18px; width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 13px; border-radius: 14px;
+  border: 1px dashed var(--border2);
+  color: var(--text3); font-size: 13px;
 }

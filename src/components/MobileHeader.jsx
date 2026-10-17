@@ -1,18 +1,19 @@
+import { Link } from 'react-router-dom'
+import { Search, Plus } from 'lucide-react'
+import Logo from './Logo'
 import './MobileHeader.css'
 
 export default function MobileHeader({ onSearch, onAdd }) {
   return (
     <header className="mob-header">
-      <div className="mob-header-logo">
-        CINE<span>METRICS</span>
-      </div>
+      <Link to="/" className="mob-header-logo"><Logo size={28} /></Link>
       <div className="mob-header-actions">
-        <button className="mob-header-btn" onClick={onSearch} title="Search">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
+        <button className="mob-header-btn" onClick={onSearch} aria-label="Search">
+          <Search size={18} strokeWidth={2} />
         </button>
-        <button className="mob-header-btn add" onClick={onAdd} title="Add film">+</button>
+        <button className="mob-header-btn add" onClick={onAdd} aria-label="Add film">
+          <Plus size={20} strokeWidth={2.25} />
+        </button>
       </div>
     </header>
   )

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { FileJson, FileSpreadsheet, Upload, FolderOpen } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import './ImportExport.css'
 
@@ -148,8 +149,8 @@ export default function ImportExport() {
           <div className="ie-card-title mono">EXPORT</div>
           <div className="ie-card-desc">Download your entire library.</div>
           <div className="ie-export-btns">
-            <button className="btn-primary" onClick={exportJSON}>📦 Export JSON</button>
-            <button className="btn-secondary" onClick={exportCSV}>📊 Export CSV</button>
+            <button className="btn-primary" onClick={exportJSON}><FileJson size={16} /> Export JSON</button>
+            <button className="btn-secondary" onClick={exportCSV}><FileSpreadsheet size={16} /> Export CSV</button>
           </div>
         </div>
 
@@ -157,7 +158,7 @@ export default function ImportExport() {
           <div className="ie-card-title mono">IMPORT FROM LETTERBOXD</div>
           <div className="ie-card-desc">Upload your Letterboxd watched.csv export.</div>
           <label className="ie-upload-btn btn-primary">
-            📥 Choose CSV File
+            <Upload size={16} /> Choose CSV file
             <input type="file" accept=".csv" onChange={handleLetterboxdImport} hidden />
           </label>
           <div className="ie-hint mono">Go to Letterboxd → Settings → Import & Export → Export Your Data</div>
@@ -167,7 +168,7 @@ export default function ImportExport() {
           <div className="ie-card-title mono">IMPORT JSON BACKUP</div>
           <div className="ie-card-desc">Restore from a CineMetrics JSON export.</div>
           <label className="ie-upload-btn btn-secondary">
-            📂 Choose JSON File
+            <FolderOpen size={16} /> Choose JSON file
             <input type="file" accept=".json" onChange={handleJSONImport} hidden />
           </label>
         </div>
@@ -188,7 +189,7 @@ export default function ImportExport() {
         <div className="ie-done">
           <div className="ie-done-title">Import Complete</div>
           <div className="ie-done-stats mono">
-            ✅ {importStats.added} added · ⏭️ {importStats.skipped} skipped · ❌ {importStats.failed} failed
+            {importStats.added} added · {importStats.skipped} skipped · {importStats.failed} failed
           </div>
         </div>
       )}

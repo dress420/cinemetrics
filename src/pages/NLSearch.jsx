@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Sparkles, ArrowRight } from 'lucide-react'
 import { discoverMovies } from '../lib/tmdb'
 import MiniCard from '../components/MiniCard'
 import './NLSearch.css'
@@ -99,17 +100,17 @@ export default function NLSearch() {
       <div className="nls-search-area">
         <div className="nls-input-row">
           <input className="nls-input" value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder='e.g. "dark thriller with an unreliable narrator"' />
-          <button className="btn-primary nls-go" onClick={() => handleSearch()} disabled={loading}>{loading ? '...' : '→'}</button>
+          <button className="btn-primary nls-go" onClick={() => handleSearch()} disabled={loading}>{loading ? '…' : <ArrowRight size={18} />}</button>
         </div>
         <div className="nls-examples">
           {EXAMPLES.map(ex => <button key={ex} className="nls-example tag" onClick={() => { setQuery(ex); handleSearch(ex) }}>{ex}</button>)}
         </div>
       </div>
       {error && <div className="nls-error mono">{error}</div>}
-      {reason && <div className="nls-reason mono">🧠 {reason}</div>}
+      {reason && <div className="nls-reason mono"><Sparkles size={14} /> {reason}</div>}
       {loading && <div className="nls-loading mono">Searching...</div>}
       {!loading && films.length > 0 && <div className="mc-grid">{films.map(f => <MiniCard key={f.id} film={f} />)}</div>}
-      {!loading && !error && films.length === 0 && query && reason && <div style={{ textAlign: 'center', padding: 40, color: 'var(--text4)', fontFamily: 'var(--mono)', fontSize: 13 }}>No films found — try different keywords</div>}
+      {!loading && !error && films.length === 0 && query && reason && <div className="empty-state"><div className="empty-state-title">No films found</div><div className="empty-state-sub">Try different keywords</div></div>}
     </div>
   )
 }

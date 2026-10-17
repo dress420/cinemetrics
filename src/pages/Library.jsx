@@ -1,3 +1,4 @@
+import { Library as LibraryIcon, Plus } from 'lucide-react'
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../lib/supabase'
 import FilmCard from '../components/FilmCard'
@@ -59,7 +60,7 @@ export default function Library({ onAddFilm, refreshKey }) {
           <div className="page-title">My Library</div>
           <div className="page-sub">{films.length} titles logged</div>
         </div>
-        <button className="btn-primary" onClick={onAddFilm}>+ Add Film</button>
+        <button className="btn-primary" onClick={onAddFilm}><Plus size={16} strokeWidth={2.5} /> Add film</button>
       </div>
 
       <div className="lib-controls">
@@ -94,13 +95,13 @@ export default function Library({ onAddFilm, refreshKey }) {
         <div className="lib-loading">Loading your library...</div>
       ) : filtered.length === 0 ? (
         <div className="lib-empty">
-          <div className="lib-empty-icon">◈</div>
+          <div className="empty-state-icon"><LibraryIcon size={24} strokeWidth={1.6} /></div>
           <div className="lib-empty-title">Nothing here yet</div>
           <div className="lib-empty-sub">
             {search ? 'No results for that search' : 'Add your first film to get started'}
           </div>
           {!search && (
-            <button className="btn-primary" onClick={onAddFilm}>+ Add Film</button>
+            <button className="btn-primary" onClick={onAddFilm}><Plus size={16} strokeWidth={2.5} /> Add film</button>
           )}
         </div>
       ) : (

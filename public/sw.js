@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cinemetrics-v2';
+const CACHE_NAME = 'cinemetrics-v3';
 const OFFLINE_URL = '/offline.html';
 
 // Cache the shell on install

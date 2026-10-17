@@ -1,3 +1,4 @@
+import { Clock, Plus } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import FilmCard from '../components/FilmCard'
@@ -23,12 +24,12 @@ export default function Watching({ onAddFilm }) {
           <div className="page-title">Currently Watching</div>
           <div className="page-sub">{films.length} in progress</div>
         </div>
-        <button className="btn-primary" onClick={onAddFilm}>+ Add Film</button>
+        <button className="btn-primary" onClick={onAddFilm}><Plus size={16} strokeWidth={2.5} /> Add film</button>
       </div>
       {loading ? <div className="lib-loading">Loading...</div>
         : films.length === 0 ? (
           <div className="lib-empty">
-            <div className="lib-empty-icon">◷</div>
+            <div className="empty-state-icon"><Clock size={24} strokeWidth={1.6} /></div>
             <div className="lib-empty-title">Nothing in progress</div>
             <div className="lib-empty-sub">Add films with status "Watching"</div>
           </div>
