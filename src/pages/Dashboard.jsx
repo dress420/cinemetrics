@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { Search, Plus, ChevronLeft, ChevronRight, ArrowRight, Star, Film } from 'lucide-react'
 import { IMG_THUMB } from '../lib/tmdb'
+import { useRatings } from '../hooks/useRatings'
+import RatingsBoard from '../components/RatingsBoard'
 import './Dashboard.css'
 
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY
@@ -150,6 +152,8 @@ export default function Dashboard({ onAddFilm, onSearch, onFilmClick, isMobile }
   const [error,         setError]         = useState('')
   const fetchId = useRef(0)
   const listRef = useRef(null)
+  // Ratings aller Anbieter für den Film im Hero (kurz verzögert beim schnellen Durchklicken)
+  const heroRatings = useRatings(featured, { delay: 350 })
 
   useEffect(() => {
     const id = ++fetchId.current
@@ -205,22 +209,25 @@ export default function Dashboard({ onAddFilm, onSearch, onFilmClick, isMobile }
   return (
     <div className="dashboard">
       <header className="dash-head">
-        <div>
-          <div className="dash-eyebrow">{dateLabel}</div>
-          <h1 className="page-title">{greeting()}</h1>
-        </div>
-        {!isMobile && (
-          <div className="dash-actions">
-            <button className="dash-search" onClick={onSearch}>
-              <Search size={16} strokeWidth={2} />
-              <span>Search films &amp; series</span>
-              <kbd>⌘K</kbd>
-            </button>
-            <button className="btn-primary" onClick={onAddFilm}>
-              <Plus size={16} strokeWidth={2.5} /> Add film
-            </button>
+        <div className="dash-head-top">
+          <div>
+            <div className="dash-eyebrow">{dateLabel}</div>
+            <h1 className="page-title">{greeting()}</h1>
           </div>
-        )}
+          {!isMobile && (
+            <button className="btn-secondary dash-add" onClick={onAddFilm}>
+              <Plus size={16} strokeWidth={2.25} /> Add film
+            </button>
+          )}
+        </div>
+        <button className="dash-search" onClick={onSearch}>
+          <Search size={20} strokeWidth={2} />
+          <span className="dash-search-text">
+            <span className="dash-search-main">Check any film or series</span>
+            <span className="dash-search-sub">IMDb · Rotten Tomatoes · Metacritic · Letterboxd · TMDB</span>
+          </span>
+          {!isMobile && <kbd>⌘K</kbd>}
+        </button>
       </header>
 
       <section className="trend" aria-label="Trending">
@@ -327,8 +334,9 @@ export default function Dashboard({ onAddFilm, onSearch, onFilmClick, isMobile }
                     <span className="star-inline"><Star size={12} fill="currentColor" strokeWidth={0} />{featured.vote_average.toFixed(1)}</span>
                   )}
                 </div>
+                <div className="trend-hero-ratings"><RatingsBoard ratings={heroRatings} variant="compact" /></div>
                 {featured.overview && <p className="trend-hero-overview">{featured.overview}</p>}
-                <span className="trend-hero-cta">Ratings &amp; details <ArrowRight size={14} /></span>
+                <span className="trend-hero-cta">All ratings &amp; details <ArrowRight size={14} /></span>
               </div>
             </article>
 

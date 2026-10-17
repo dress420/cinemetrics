@@ -1,18 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
-import { X, Star, Check, Plus, ExternalLink, Play } from 'lucide-react'
+import { X, Check, Plus, ExternalLink, Play } from 'lucide-react'
 import { getMovie, getTVShow, IMG_THUMB, IMG_BACKDROP } from '../lib/tmdb'
-import { getOMDBData } from '../lib/omdb'
 import { supabase } from '../lib/supabase'
+import { useRatings } from '../hooks/useRatings'
+import RatingsBoard from './RatingsBoard'
 import './FilmDetailPanel.css'
-
-const scoreClass = (val, max = 10) => {
-  const pct = (val / max) * 100
-  return pct >= 75 ? 'high' : pct >= 55 ? 'mid' : 'low'
-}
 
 export default function FilmDetailPanel({ film, onClose, onAdd, onOpenFilm }) {
   const [details, setDetails] = useState(null)
-  const [omdb, setOmdb] = useState(null)
   const [inLib, setInLib] = useState(false)
   const [loading, setLoading] = useState(true)
   const panelRef = useRef(null)
@@ -26,30 +21,19 @@ export default function FilmDetailPanel({ film, onClose, onAdd, onOpenFilm }) {
     const rid = ++reqId.current
     setLoading(true)
     setDetails(null)
-    setOmdb(null)
     setInLib(false)
     panelRef.current?.scrollTo(0, 0)
 
     ;(async () => {
       try {
-        const d = type === 'tv' ? await getTVShow(id) : await getMovie(id)
-        if (rid !== reqId.current) return
-        setDetails(d)
-        setLoading(false)
-
-        const imdbId = d.imdb_id || d.external_ids?.imdb_id || null
-        const [o, lib] = await Promise.all([
-          getOMDBData({
-            imdbId,
-            title: d.title || d.name,
-            year: (d.release_date || d.first_air_date || '').split('-')[0],
-            type,
-          }),
+        const [d, lib] = await Promise.all([
+          type === 'tv' ? getTVShow(id) : getMovie(id),
           supabase.from('films').select('id').eq('tmdb_id', id).maybeSingle(),
         ])
         if (rid !== reqId.current) return
-        setOmdb(o)
+        setDetails(d)
         setInLib(!!lib?.data)
+        setLoading(false)
       } catch {
         if (rid === reqId.current) setLoading(false)
       }
@@ -63,6 +47,10 @@ export default function FilmDetailPanel({ film, onClose, onAdd, onOpenFilm }) {
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
+  // Bewertungen aller Anbieter — starten sofort, unabhängig von den TMDB-Details
+  const ratings = useRatings(details ? { ...film, vote_average: details.vote_average, vote_count: details.vote_count } : film)
+  const omdb = ratings.omdb
+
   if (!film) return null
 
   const title = details?.title || details?.name || film.title || film.name
@@ -75,20 +63,13 @@ export default function FilmDetailPanel({ film, onClose, onAdd, onOpenFilm }) {
   const director = (details?.credits?.crew || []).find(c => c.job === 'Director')
     || (details?.created_by || [])[0]
   const similar = (details?.similar?.results || []).filter(s => s.poster_path).slice(0, 9)
-  const imdbId = omdb?.imdbId || details?.imdb_id || details?.external_ids?.imdb_id
   const trailer = (details?.videos?.results || []).find(v => v.site === 'YouTube' && v.type === 'Trailer')
     || (details?.videos?.results || []).find(v => v.site === 'YouTube')
   const runtime = details?.runtime || details?.episode_run_time?.[0]
 
-  const scores = []
-  if (details?.vote_average) scores.push({ label: 'TMDB', value: details.vote_average.toFixed(1), cls: scoreClass(details.vote_average) })
-  if (omdb?.imdbRating) scores.push({ label: 'IMDb', value: omdb.imdbRating.toFixed(1), cls: scoreClass(omdb.imdbRating), sub: omdb.imdbVotes })
-  if (omdb?.rtRating != null) scores.push({ label: 'Rotten Tomatoes', value: `${omdb.rtRating}%`, cls: scoreClass(omdb.rtRating, 100) })
-  if (omdb?.metacritic) scores.push({ label: 'Metacritic', value: omdb.metacritic, cls: scoreClass(omdb.metacritic, 100) })
-
   const omdbNote =
-    omdb?.error === 'invalid-key' ? 'IMDb/RT scores unavailable — the OMDb API key is invalid.'
-    : omdb?.error === 'limit' ? 'IMDb/RT scores paused — daily OMDb limit reached.'
+    omdb?.error === 'invalid-key' ? 'IMDb, Rotten Tomatoes & Metacritic unavailable — the OMDb API key is invalid.'
+    : omdb?.error === 'limit' ? 'IMDb, Rotten Tomatoes & Metacritic paused — daily OMDb limit reached.'
     : null
 
   const facts = [
@@ -131,34 +112,16 @@ export default function FilmDetailPanel({ film, onClose, onAdd, onOpenFilm }) {
             </div>
           </div>
 
-          <div className="fdp-section">
-            <div className="fdp-section-title">Ratings</div>
-            {loading ? (
-              <div className="fdp-scores">{[0, 1, 2].map(i => <div key={i} className="fdp-score-card fdp-skel" />)}</div>
-            ) : (
-              <div className="fdp-scores">
-                {scores.map(s => (
-                  <div key={s.label} className={`fdp-score-card ${s.cls}`}>
-                    <div className="fdp-score-val">{s.value}</div>
-                    <div className="fdp-score-label">{s.label}</div>
-                  </div>
-                ))}
-                {!omdb && <div className="fdp-score-card fdp-skel" aria-label="Loading more ratings" />}
-              </div>
-            )}
+          <div className="fdp-section fdp-ratings">
+            <RatingsBoard ratings={ratings} />
             {omdbNote && <div className="fdp-note">{omdbNote}</div>}
           </div>
 
-          {(imdbId || trailer) && (
+          {(trailer || details?.homepage) && (
             <div className="fdp-links">
               {trailer && (
                 <a className="fdp-link" href={`https://www.youtube.com/watch?v=${trailer.key}`} target="_blank" rel="noreferrer">
                   <Play size={14} fill="currentColor" strokeWidth={0} /> Trailer
-                </a>
-              )}
-              {imdbId && (
-                <a className="fdp-link imdb" href={`https://www.imdb.com/title/${imdbId}/`} target="_blank" rel="noreferrer">
-                  IMDb <ExternalLink size={13} />
                 </a>
               )}
               {details?.homepage && (

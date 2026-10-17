@@ -1,7 +1,7 @@
 {
   "name": "CineMetrics",
   "short_name": "CineMetrics",
-  "description": "Track, discover, and analyze your film taste.",
+  "description": "Every rating in one place — TMDB, IMDb, Rotten Tomatoes, Metacritic and Letterboxd.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#080a0d",
@@ -38,10 +38,10 @@
   ],
   "shortcuts": [
     {
-      "name": "Tonight's Pick",
-      "short_name": "Pick",
-      "url": "/tonights-pick",
-      "description": "Get a film recommendation for tonight"
+      "name": "Check ratings",
+      "short_name": "Search",
+      "url": "/?search=1",
+      "description": "Search a film or series and see every rating"
     },
     {
       "name": "My Library",
@@ -50,10 +50,10 @@
       "description": "Browse your film library"
     },
     {
-      "name": "AI Search",
-      "short_name": "Search",
-      "url": "/nl-search",
-      "description": "Search films with natural language"
+      "name": "Watchlist",
+      "short_name": "Watchlist",
+      "url": "/watchlist",
+      "description": "What you want to watch next"
     }
   ],
   "id": "/"

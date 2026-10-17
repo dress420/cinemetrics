@@ -292,14 +292,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .mobile-mode .mood-selector { grid-template-columns: repeat(2, 1fr); gap: 8px; }
 .mobile-mode .mood-option { padding: 16px 12px; }
 
-.mobile-mode .tb-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.mobile-mode .tb-card { padding: 16px 8px; }
-
-.mobile-mode .dna-grid { grid-template-columns: 1fr; }
-.mobile-mode .personality-title { font-size: 26px; }
-.mobile-mode .dna-personality-card { padding: 22px; }
-.mobile-mode .dna-stats-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-
 .mobile-mode .stats-hero { flex-wrap: wrap; gap: 20px; padding: 24px; }
 .mobile-mode .hero-num { font-size: 36px; }
 .mobile-mode .hero-divider { display: none; }

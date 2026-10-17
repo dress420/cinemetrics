@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
 import MobileNav from './components/MobileNav'
 import MobileHeader from './components/MobileHeader'
@@ -14,13 +14,9 @@ import Recommendations from './pages/Recommendations'
 import MoodEngine from './pages/MoodEngine'
 import HiddenGems from './pages/HiddenGems'
 import RabbitHole from './pages/RabbitHole'
-import DNA from './pages/DNA'
 import Stats from './pages/Stats'
-import Vibes from './pages/Vibes'
 import NLSearch from './pages/NLSearch'
-import TonightsPick from './pages/TonightsPick'
 import TwoPlayer from './pages/TwoPlayer'
-import TimeBudget from './pages/TimeBudget'
 import Franchise from './pages/Franchise'
 import Streaming from './pages/Streaming'
 import ActorHeatmap from './pages/ActorHeatmap'
@@ -48,10 +44,20 @@ export default function App() {
   const [refreshKey, setRefreshKey]     = useState(0)
   const mainRef = useRef(null)
   const location = useLocation()
+  const navigate = useNavigate()
 
   const isMobile = viewMode === 'mobile'
 
   useEffect(() => { loadCount() }, [refreshKey])
+
+  // App-Shortcut "/?search=1" öffnet direkt die Suche
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    if (params.get('search') === '1') {
+      setShowSearch(true)
+      navigate(location.pathname, { replace: true })
+    }
+  }, [location.search])
 
   // Beim Seitenwechsel wieder nach oben scrollen
   useEffect(() => { mainRef.current?.scrollTo(0, 0) }, [location.pathname])
@@ -113,22 +119,22 @@ export default function App() {
           <Route path="/mood"            element={<MoodEngine />} />
           <Route path="/gems"            element={<HiddenGems />} />
           <Route path="/rabbit-hole"     element={<RabbitHole />} />
-          <Route path="/vibes"           element={<Vibes />} />
           <Route path="/nl-search"       element={<NLSearch />} />
-          <Route path="/tonights-pick"   element={<TonightsPick />} />
           <Route path="/two-player"      element={<TwoPlayer />} />
-          <Route path="/time-budget"     element={<TimeBudget />} />
-          <Route path="/dna"             element={<DNA />} />
           <Route path="/stats"           element={<Stats />} />
           <Route path="/heatmap"         element={<ActorHeatmap />} />
           <Route path="/franchise"       element={<Franchise />} />
           <Route path="/streaming"       element={<Streaming />} />
           <Route path="/import"          element={<ImportExport />} />
-          <Route path="*"                element={<ComingSoon title="Seite nicht gefunden" />} />
+          {/* entfernte Seiten → Startseite (z. B. alte Lesezeichen) */}
+          {['/vibes', '/tonights-pick', '/time-budget', '/dna', '/watchparty'].map(p => (
+            <Route key={p} path={p} element={<Navigate to="/" replace />} />
+          ))}
+          <Route path="*"                element={<ComingSoon title="Page not found" />} />
         </Routes>
       </main>
 
-      {isMobile && <MobileNav filmCount={filmCount} onToggleMode={toggleMode} />}
+      {isMobile && <MobileNav filmCount={filmCount} onToggleMode={toggleMode} onSearch={openSearch} />}
 
       {showSearch && (
         <QuickSearch onClose={() => setShowSearch(false)} onSelect={(film) => { setShowSearch(false); handleFilmClick(film) }} />

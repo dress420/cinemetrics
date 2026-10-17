@@ -1,19 +1,18 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { House, Library, WandSparkles, Clapperboard, Ellipsis, X, Monitor } from 'lucide-react'
+import { House, Library, Bookmark, Search, Ellipsis, X, Monitor } from 'lucide-react'
 import { NAV_GROUPS } from '../lib/nav'
 import Logo from './Logo'
 import './MobileNav.css'
 
 const TABS = [
-  { to: '/',              label: 'Home',    icon: House },
-  { to: '/library',       label: 'Library', icon: Library },
-  { to: '/vibes',         label: 'Vibes',   icon: WandSparkles },
-  { to: '/tonights-pick', label: 'Pick',    icon: Clapperboard },
+  { to: '/',          label: 'Home',      icon: House },
+  { to: '/library',   label: 'Library',   icon: Library },
+  { to: '/watchlist', label: 'Watchlist', icon: Bookmark },
 ]
 const TAB_PATHS = new Set(TABS.map(t => t.to))
 
-export default function MobileNav({ filmCount, onToggleMode }) {
+export default function MobileNav({ filmCount, onToggleMode, onSearch }) {
   const [showMore, setShowMore] = useState(false)
   const location = useLocation()
 
@@ -67,7 +66,17 @@ export default function MobileNav({ filmCount, onToggleMode }) {
       )}
 
       <nav className="mob-nav" aria-label="Main navigation">
-        {TABS.map(({ to, label, icon: Icon }) => (
+        {TABS.slice(0, 1).map(({ to, label, icon: Icon }) => (
+          <NavLink key={to} to={to} end className={({ isActive }) => `mob-tab${isActive && !showMore ? ' active' : ''}`}>
+            <Icon size={21} strokeWidth={1.75} />
+            <span className="mob-tab-label">{label}</span>
+          </NavLink>
+        ))}
+        <button className="mob-tab" onClick={() => { setShowMore(false); onSearch?.() }}>
+          <Search size={21} strokeWidth={1.75} />
+          <span className="mob-tab-label">Search</span>
+        </button>
+        {TABS.slice(1).map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
             to={to}

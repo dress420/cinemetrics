@@ -49,7 +49,7 @@ export default function Recommendations() {
         <div className="page-title">For You</div>
         <div className="page-sub">{reason || 'Analyzing your taste...'}</div>
       </div>
-      {loading ? <div className="recs-loading">Analyzing your DNA profile...</div>
+      {loading ? <div className="recs-loading">Analyzing your taste…</div>
         : films.length === 0 ? <div className="empty-state"><div className="empty-state-icon"><ThumbsUp size={24} strokeWidth={1.6} /></div><div className="empty-state-title">Not enough data yet</div><div className="empty-state-sub">Add at least 5 films to get recommendations</div></div>
         : <div className="mc-grid">{recs.map(f => <MiniCard key={f.id} film={f} />)}</div>
       }
