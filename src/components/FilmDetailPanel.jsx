@@ -4,6 +4,7 @@ import { getMovie, getTVShow, IMG_THUMB, IMG_BACKDROP } from '../lib/tmdb'
 import { supabase } from '../lib/supabase'
 import { useRatings } from '../hooks/useRatings'
 import RatingsBoard from './RatingsBoard'
+import WhereToWatch from './WhereToWatch'
 import './FilmDetailPanel.css'
 
 export default function FilmDetailPanel({ film, onClose, onAdd, onOpenFilm }) {
@@ -131,6 +132,8 @@ export default function FilmDetailPanel({ film, onClose, onAdd, onOpenFilm }) {
               )}
             </div>
           )}
+
+          {id && <WhereToWatch id={id} type={type} />}
 
           {details?.overview && (
             <div className="fdp-section">

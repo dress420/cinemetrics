@@ -3,6 +3,7 @@ const BASE_URL = 'https://api.themoviedb.org/3'
 export const IMG_BASE = 'https://image.tmdb.org/t/p/w500'
 export const IMG_THUMB = 'https://image.tmdb.org/t/p/w200'
 export const IMG_BACKDROP = 'https://image.tmdb.org/t/p/w1280'
+export const IMG_LOGO = 'https://image.tmdb.org/t/p/w92'
 
 const get = async (path, params = {}) => {
   const url = new URL(`${BASE_URL}${path}`)
@@ -21,3 +22,5 @@ export const getTrending    = (type = 'all') => get(`/trending/${type}/week`)
 export const getTopRated    = (type = 'movie') => get(`/${type}/top_rated`)
 export const getNowPlaying  = () => get('/movie/now_playing')
 export const discoverMovies = (params) => get('/discover/movie', params)
+// Wo läuft der Titel legal? Daten von JustWatch, alle Länder in einer Antwort
+export const getWatchProviders = (id, type = 'movie') => get(`/${type === 'tv' ? 'tv' : 'movie'}/${id}/watch/providers`)
