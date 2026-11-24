@@ -1,18 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Tv, ChevronLeft, ChevronRight } from 'lucide-react'
 import MiniCard from '../components/MiniCard'
+import { REGIONS, getRegion, saveRegion } from '../lib/watch'
 import './Streaming.css'
 
 const WATCHMODE_KEY = 'iyrAi3e0WTtDLeIF4ywyes6ySKfAVOjrhNTDiRJN'
 const TMDB_KEY = import.meta.env.VITE_TMDB_API_KEY
-const REGIONS = [
-  { code: 'DE', label: 'Germany' },
-  { code: 'AT', label: 'Austria' },
-  { code: 'CH', label: 'Switzerland' },
-  { code: 'GB', label: 'UK' },
-  { code: 'US', label: 'USA' },
-]
-const initialRegion = () => { try { return localStorage.getItem('cinemetrics-region') || 'DE' } catch { return 'DE' } }
 
 const SERVICES = [
   { id: 203, name: 'Netflix',      color: '#E50914', mark: 'N' },
@@ -36,7 +29,7 @@ export default function StreamingFilter() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [error, setError] = useState('')
-  const [region, setRegion] = useState(initialRegion)
+  const [region, setRegion] = useState(getRegion)
 
   const toggle = (id) => { setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]) }
 
@@ -68,7 +61,7 @@ export default function StreamingFilter() {
   }
 
   useEffect(() => { if (selected.length > 0) search(1); else setFilms([]) }, [selected, region])
-  const changeRegion = (r) => { setRegion(r); try { localStorage.setItem('cinemetrics-region', r) } catch {} }
+  const changeRegion = (r) => { setRegion(r); saveRegion(r) }
   const activeNames = selected.map(id => SERVICES.find(s => s.id === id)?.name).filter(Boolean)
 
   return (

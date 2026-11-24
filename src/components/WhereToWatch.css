@@ -1,0 +1,51 @@
+.wtw-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.wtw-head .fdp-section-title { margin-bottom: 0; }
+
+.wtw-regions { display: inline-flex; gap: 2px; padding: 3px; border-radius: 9px; background: var(--bg2); border: 1px solid var(--border); }
+.wtw-region { height: 22px; padding: 0 8px; border-radius: 6px; font-family: var(--mono); font-size: 10.5px; color: var(--text3); }
+.wtw-region:hover { color: var(--text); }
+.wtw-region.active { background: var(--bg4); color: var(--text); box-shadow: inset 0 0 0 1px var(--border2); }
+
+.wtw-groups { display: flex; flex-direction: column; gap: 10px; }
+.wtw-group { display: grid; grid-template-columns: 56px 1fr; gap: 10px; align-items: start; }
+.wtw-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text3); padding-top: 9px;
+}
+.wtw-label-free { color: var(--green); }
+.wtw-label-stream { color: var(--accent); }
+
+.wtw-providers { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.wtw-provider {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 34px; padding: 0 10px 0 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border2);
+  background: rgba(255,255,255,.03);
+  color: var(--text); text-decoration: none;
+  font-size: 12.5px; font-weight: 500;
+  max-width: 100%;
+  transition: border-color .15s, background .15s;
+}
+a.wtw-provider:hover { border-color: var(--border3); background: rgba(255,255,255,.06); }
+.wtw-provider img, .wtw-provider-fallback { width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0; object-fit: cover; }
+.wtw-provider-fallback { display: flex; align-items: center; justify-content: center; background: var(--bg4); color: var(--text2); font-weight: 700; font-size: 12px; }
+.wtw-provider-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.wtw-skeleton { display: flex; gap: 6px; }
+.wtw-skeleton span {
+  width: 108px; height: 34px; border-radius: 10px;
+  background: linear-gradient(90deg, var(--bg2) 0%, var(--bg3) 50%, var(--bg2) 100%);
+  background-size: 200% 100%;
+  animation: wtwShimmer 1.2s ease-in-out infinite;
+}
+@keyframes wtwShimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+.wtw-empty { font-size: 13px; color: var(--text3); line-height: 1.6; }
+.wtw-inline { font-size: 13px; color: var(--accent); padding: 0; border-radius: 4px; }
+.wtw-inline:hover { color: var(--accent2); text-decoration: underline; }
+
+.wtw-credit { display: inline-block; margin-top: 10px; font-family: var(--mono); font-size: 10px; color: var(--text4); text-decoration: none; }
+.wtw-credit:hover { color: var(--text3); }
+
+.mobile-mode .wtw-group { grid-template-columns: 48px 1fr; }
